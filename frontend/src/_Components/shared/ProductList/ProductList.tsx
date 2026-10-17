@@ -1,30 +1,72 @@
-'use client'
-import { IProduct } from "@/app/_interfaces/products"
-import { useState } from "react"
-import FilterGroup from "../FilterGroup/FilterGroup"
-import ProductCard from "../ProductCard/ProductCard"
-import { SquareChevronUp } from "lucide-react"
-import { motion } from 'motion/react'
+'use client';
+import { IProduct } from "@/app/_interfaces/products";
+import { Suspense, useState } from "react";
+import FilterGroup from "../FilterGroup/FilterGroup";
+import ProductCard from "../ProductCard/ProductCard";
+import { SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function ProductList({ products }: { products: IProduct[] }) {
-    const [isOpenFilter, setIsOpenFilter] = useState(true)
+    const [isOpenFilter, setIsOpenFilter] = useState(true);
+
     return (
-        <div className="grid grid-cols-4">
-            <div className="sticky top-20 px-2 max-md:hidden ">
-                <button onClick={() => setIsOpenFilter(!isOpenFilter)} className={` absolute -left-5 ${isOpenFilter ? 'sticky top-28 -ms-10 rotate-270' : ''} rotate-90  md:flex bg-text2 text-primary items-center px-2 py-1 rounded-t-md  border-b-0 active:scale-105 hidden`}>
-                    <SquareChevronUp size={20} />
+        <div className='flex gap-8 relative items-start'>
+            {/* Desktop Filter Sidebar */}
+            <aside
+                className={`hidden lg:block transition-all duration-300 flex-shrink-0 ${
+                    isOpenFilter ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden'
+                }`}
+            >
+                <div className='sticky top-32 p-5 bg-white dark:bg-[#28211E] rounded-2xl border border-[#EBDED6] dark:border-[#3D332E] shadow-2xs'>
+                    <div className='flex items-center justify-between pb-3 mb-4 border-b border-[#EBDED6] dark:border-[#3D332E]'>
+                        <div className='flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2B2320] dark:text-[#FAF6F0]'>
+                            <SlidersHorizontal className='w-4 h-4 text-[#C48D80]' />
+                            <span>Filters</span>
+                        </div>
+                        <button
+                            onClick={() => setIsOpenFilter(false)}
+                            className='text-xs text-[#988172] hover:text-[#C48D80] flex items-center'
+                            title='Collapse filters'
+                        >
+                            <ChevronLeft className='w-4 h-4' />
+                        </button>
+                    </div>
+                    <Suspense fallback={<div className='p-4 text-xs text-[#988172]'>Loading filters...</div>}>
+                        <FilterGroup isOpenFilter={isOpenFilter} setIsOpenFilter={setIsOpenFilter} from='lg' />
+                    </Suspense>
+                </div>
+            </aside>
+
+            {/* Toggle Button when Filter is Collapsed on Desktop */}
+            {!isOpenFilter && (
+                <button
+                    onClick={() => setIsOpenFilter(true)}
+                    className='hidden lg:flex sticky top-32 items-center gap-2 px-3 py-2 rounded-r-xl bg-white dark:bg-[#28211E] border border-l-0 border-[#EBDED6] dark:border-[#3D332E] shadow-xs text-xs font-medium text-[#2B2320] dark:text-[#FAF6F0] hover:text-[#C48D80]'
+                >
+                    <SlidersHorizontal className='w-3.5 h-3.5 text-[#C48D80]' />
+                    <span>Show Filters</span>
+                    <ChevronRight className='w-3.5 h-3.5' />
                 </button>
-                <motion.div initial={{ width: 0 }} exit={{width:0}} transition={{ type: 'spring', stiffness: 200, damping: 20 }} animate={{ width: isOpenFilter ? '100%' : 0 }} className={`${isOpenFilter ? 'sticky top-28 border-r border-muted -mt-5 p-2' : 'hidden'} `}>
-                    <FilterGroup isOpenFilter={isOpenFilter} setIsOpenFilter={setIsOpenFilter} from='lg' />
-                </motion.div>
-            </div>
-            <div className={`${isOpenFilter ? 'max-md:col-span-4 col-span-3 sm:grid-cols-2 md:grid-cols-3' : 'col-span-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 '} grid grid-cols-1 gap-y-10 `}>
-                {
-                    products?.map((product: IProduct) => {
-                        return <ProductCard key={product.id} product={product} />
-                    })
-                }
+            )}
+
+            {/* Product Grid */}
+            <div className='flex-1 min-w-0'>
+                <div
+                    className={`grid gap-5 sm:gap-6 ${
+                        isOpenFilter
+                            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+                            : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+                    }`}
+                >
+                    {products?.map((product: IProduct, idx: number) => (
+                        <ProductCard
+                            key={product.id || product._id}
+                            product={product}
+                            dataAos='fade-up'
+                            dataAosDelay={(idx % 6) * 70}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
-    )
+    );
 }

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Button } from "@/_Components/ui/button";
 import useToggleCart from "@/app/_hooks/useToggleCart";
 import { RootState } from "@/redux/store";
@@ -8,31 +8,46 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-export default function AddToCartBtn({ id, from }: { id: string, from?: 'productDetails' | 'productCard' }) {
-    const { data: session } = useSession()
-    const route = useRouter()
-    const { cartIds } = useSelector((state: RootState) => state.cartCount)
-    const isActive = cartIds.includes(id)
+export default function AddToCartBtn({ id, from }: { id: string; from?: 'productDetails' | 'productCard' }) {
+    const { data: session } = useSession();
+    const route = useRouter();
+    const { cartIds } = useSelector((state: RootState) => state.cartCount);
+    const isActive = cartIds.includes(id);
 
-    const { active, handleToggleCart, loading } = useToggleCart({ id, isActive })
+    const { active, handleToggleCart, loading } = useToggleCart({ id, isActive });
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (!session) {
-            e.preventDefault()
-            route.push('/login')
-            toast.error(<Link href="/login">You must Login First </Link>)
-        } else
-            handleToggleCart(e)
+            e.preventDefault();
+            route.push('/login');
+            toast.error(<Link href="/login">Please sign in to add to bag</Link>);
+        } else {
+            handleToggleCart(e);
+        }
+    };
+
+    if (from === 'productDetails') {
+        return (
+            <Button
+                onClick={handleClick}
+                className='w-full py-6 rounded-full bg-[#C48D80] hover:bg-[#B27B6E] text-white font-medium text-sm transition-all shadow-sm active:scale-98'
+            >
+                {loading && <span className='miniLoader !border-white mr-2' />}
+                {active ? 'Remove From Bag' : 'Add To Bag'}
+            </Button>
+        );
     }
+
     return (
-        <Button onClick={handleClick} className={`${from === 'productDetails' ? 'button-primary rounded-xs px-12 w-10/12' : `w-full absolute cursor-pointer rounded-none bottom-0 ${active && 'md:!bottom-0 !bg-hover-button2 hover:!bg-secondary2'} md:-bottom-10  bg-button dark:bg-secondary2 text-text hover:text-text  hover:bg-text1  group-hover:bottom-0 duration-200`} `}>
-            {loading &&
-                <div className="flex-center ">
-                    <span className={`miniLoader dark:!border-white`}></span>
-                </div>
-            }
-            {
-                active ? 'Remove From Cart' : 'Add To Cart'
-            }
+        <Button
+            onClick={handleClick}
+            className={`w-full py-2.5 rounded-none text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                active
+                    ? 'bg-[#988172] hover:bg-[#7A6658] text-white'
+                    : 'bg-[#2B2320] hover:bg-[#C48D80] text-white'
+            }`}
+        >
+            {loading && <span className='miniLoader !border-white mr-2' />}
+            {active ? 'In Bag • Remove' : 'Quick Add To Bag'}
         </Button>
-    )
+    );
 }

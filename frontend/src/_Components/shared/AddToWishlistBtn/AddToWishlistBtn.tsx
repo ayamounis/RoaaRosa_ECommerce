@@ -33,9 +33,9 @@ export default function AddToWishlistBtn({ productId }: { productId: string }) {
                         <div className="miniLoader"></div>
                     </div>
                     :
-                    <span onClick={handleClick} className='bg-Bg size-[34] rounded-full flex-center cursor-pointer group-hover:scale-105 duration-200'>
-                        <Heart className={`hover:scale-110 duration-200 hover:text-red-500 hover:fill-red-500 ${isActive ? 'fill-red-500 text-red-500' : ''}`} color="currentColor" strokeWidth={1.5} />
-                    </span >
+                    <span onClick={handleClick} className='size-8 rounded-full flex-center cursor-pointer hover:scale-105 duration-200'>
+                        <Heart className={`w-4 h-4 duration-200 hover:text-[#C48D80] hover:fill-[#C48D80] ${isActive ? 'fill-[#C48D80] text-[#C48D80]' : 'text-[#988172]'}`} strokeWidth={1.8} />
+                    </span>
             }
         </>
     )

@@ -3,49 +3,65 @@ import TopHeader from "@/_Components/layout/TopHeader/TopHeader";
 import { Toaster } from "@/_Components/ui/sonner";
 import MainProvider from "@/Provider/MainProvider";
 import type { Metadata } from "next";
-import { Poppins } from 'next/font/google';
+import { Suspense } from 'react';
+import { Playfair_Display, Poppins } from 'next/font/google';
 import Navbar from "../_Components/layout/Navbar/Navbar";
 import "./globals.css";
 import BottomFilter from "@/_Components/shared/BottomFilter/BottomFilter";
 import { ThemeProvider } from "@/_Components/theme-provider";
+import AOSInit from "@/_Components/shared/AOSInit/AOSInit";
+import ScrollToTop from "@/_Components/shared/ScrollToTop/ScrollToTop";
 
-const poppins = Poppins({ subsets: ['latin'], weight: ["100", "200", '300', '400', '500', '600', '700', '800', '900'], variable: '--font-poppins' })
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ["100", "200", '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-poppins',
+  display: 'swap'
+});
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ecommerce-exclusive.vercel.app";
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-playfair',
+  display: 'swap'
+});
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://roarosa-girls.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Exclusive - Premium Online Shopping Store",
-    template: "%s | Exclusive",
+    default: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
+    template: "%s | ROAROSA",
   },
-  description: "Discover top deals on electronics, fashion, home appliances, and accessories with fast shipping and secure payments on Exclusive Store.",
+  description: "Discover ROAROSA — luxury girls' fashion inspired by softness and timeless elegance. Explore baby, younger, and older girls' dresses, coats, knitwear, and occasionwear.",
   keywords: [
-    "E-commerce",
-    "Online Shopping",
-    "Exclusive Deals",
-    "Electronics",
-    "Fashion",
-    "Smartphones",
-    "Laptops",
-    "Accessories"
+    "ROAROSA",
+    "Girls Clothing",
+    "Girls Fashion",
+    "Baby Girls Clothing",
+    "Younger Girls Fashion",
+    "Older Girls Clothing",
+    "Occasionwear Girls",
+    "Next Direct Girls",
+    "Egypt Girls Clothes"
   ],
-  authors: [{ name: "Fares Elabasery", url: siteUrl }],
-  creator: "Exclusive Team",
-  publisher: "Exclusive Inc.",
+  authors: [{ name: "ROAROSA Design Team", url: siteUrl }],
+  creator: "ROAROSA",
+  publisher: "ROAROSA",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    title: "Exclusive - Premium Online Shopping Store",
-    description: "Shop top-quality electronics, fashion, and home goods with best deals and fast shipping on Exclusive.",
-    siteName: "Exclusive Store",
+    title: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
+    description: "Softness is not weakness. Shop premium girls' collections with express delivery across Egypt.",
+    siteName: "ROAROSA",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Exclusive - Premium Online Shopping Store",
-    description: "Shop top-quality electronics, fashion, and home goods with best deals and fast shipping on Exclusive.",
-    creator: "@ExclusiveStore",
+    title: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
+    description: "Softness is not weakness. Shop premium girls' collections with express delivery across Egypt.",
+    creator: "@RoarosaBrand",
   },
 
   robots: {
@@ -69,11 +85,12 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
-    "name": "Exclusive",
+    "name": "ROAROSA",
+    "slogan": "Softness is not weakness",
     "url": siteUrl,
     "logo": `${siteUrl}/logo.png`,
     "image": `${siteUrl}/logo.png`,
-    "description": "Discover top deals on electronics, fashion, home appliances, and accessories with fast shipping and secure payments on Exclusive Store.",
+    "description": "Discover ROAROSA luxury girls' fashion with timeless fabrics and delicate elegance.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -93,27 +110,29 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${poppins.variable}`}
+        className={`${poppins.variable} ${playfair.variable} bg-background text-foreground antialiased`}
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
-          enableSystem ={false}
-          
+          enableSystem={false}
         >
-
+          <AOSInit />
           <MainProvider>
             <TopHeader />
             <Navbar />
-            <div className="container">
+            <main className="min-h-screen">
               {children}
-            </div>
+            </main>
             <Toaster />
             <Footer />
-            <BottomFilter />
+            <ScrollToTop />
+            <Suspense fallback={null}>
+              <BottomFilter />
+            </Suspense>
           </MainProvider>
         </ThemeProvider>
       </body>
-    </html >
+    </html>
   );
 }

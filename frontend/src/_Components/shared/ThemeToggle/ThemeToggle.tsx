@@ -12,8 +12,14 @@ export default function ThemeToggle() {
     }
 
     return (
-        <Button className="bg-primary text-gray-600  hover:bg-gray-200 hover:text-black dark:hover:bg-white dark:hover:text-black dark:text-yellow-400 dark:bg-black" variant={'ghost'} size='icon' onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-            {theme === 'dark' ? <Sun /> : <Moon />}
+        <Button
+            className="w-7 h-7 p-1 rounded-full text-[#EBDED6] hover:text-white hover:bg-white/10 dark:hover:bg-white/10 bg-transparent transition-colors cursor-pointer"
+            variant={'ghost'}
+            size='icon'
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            title="Toggle color theme"
+        >
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-[#E5C2AF]" /> : <Moon className="w-3.5 h-3.5 text-[#EBDED6]" />}
             <span className="sr-only">Theme Toggle</span>
         </Button>
     )

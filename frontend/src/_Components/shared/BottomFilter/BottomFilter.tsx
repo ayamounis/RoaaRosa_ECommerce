@@ -1,33 +1,50 @@
 'use client';
-import { SquareChevronUp } from "lucide-react";
-import { motion } from 'motion/react';
+import { SlidersHorizontal, X } from "lucide-react";
 import { useState } from "react";
 import FilterGroup from "../FilterGroup/FilterGroup";
-import SearchInput from "../SearchInput/SearchInput";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function BottomFilter() {
-    const [isOpenFilter, setIsOpenFilter] = useState(false)
-    const router = useRouter();
-    const [searchKeyword, setSearchKeyword] = useState('')
-    const handleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        router.push(`/products?search=${encodeURIComponent(searchKeyword)}`);
+    const [isOpenFilter, setIsOpenFilter] = useState(false);
+    const pathname = usePathname();
+
+    if (pathname !== '/products') {
+        return null;
     }
+
     return (
-        <motion.div transition={{ type: 'spring', stiffness: 500 }} animate={{ height: isOpenFilter ? 450 : 55 }} className={`md:hidden fixed z-10 transition-all flex items-end bg-Bg ${isOpenFilter ? '!bg-gradient-to-b from-secondary1 to-Bg' : ''} bottom-0 right-0 left-0 w-full px-4 py-2  border border-muted rounded-md shadow-md`}>
-            <motion.button initial={{y:0}} transition={{type:'spring',stiffness:400 ,mass:0.4, duration:10,delay:2,repeat:Infinity}} animate={{y:isOpenFilter?0:-5}} onClick={() => setIsOpenFilter(!isOpenFilter)} className=" absolute bottom-full right-0 flex bg-text2 text-primary items-center px-2 py-1 rounded-t-md  border-b-0 active:scale-105">
-                <SquareChevronUp size={20} />
-            </motion.button>
-            <FilterGroup isOpenFilter={isOpenFilter} setIsOpenFilter={setIsOpenFilter} />
-            <form className="flex items-center gap-2 w-full">
-                <div className="!text-xs font-medium flex-3">
-                    <SearchInput searchKeyword={searchKeyword} setSearchKeyword={setSearchKeyword} />
-                </div>
-                <button type="submit" onClick={handleSubmit} className="button-primary py-2 px-2 flex-center rounded-md text-sm flex-1">
-                    Search
+        <div className="lg:hidden">
+            {/* Floating Filter Button on Mobile Products Page */}
+            <div className="fixed bottom-6 right-6 z-40">
+                <button
+                    onClick={() => setIsOpenFilter(true)}
+                    className="flex items-center gap-2 px-5 py-3 rounded-full bg-[#2B2320] text-white shadow-xl hover:bg-[#C48D80] transition-colors text-xs font-semibold uppercase tracking-wider cursor-pointer"
+                >
+                    <SlidersHorizontal className="w-4 h-4 text-[#E5C2AF]" />
+                    <span>Filter & Sort</span>
                 </button>
-            </form>
-        </motion.div>
-    )
+            </div>
+
+            {/* Mobile Filter Modal Sheet */}
+            {isOpenFilter && (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
+                    <div className="w-full max-w-md h-full bg-[#FBF9F3] dark:bg-[#1F1917] p-6 overflow-y-auto flex flex-col">
+                        <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#EBDED6] dark:border-[#3D332E]">
+                            <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#2B2320] dark:text-[#FAF6F0]">
+                                <SlidersHorizontal className="w-4 h-4 text-[#C48D80]" />
+                                <span>Filter & Sort</span>
+                            </div>
+                            <button
+                                onClick={() => setIsOpenFilter(false)}
+                                className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                            >
+                                <X className="w-5 h-5 text-[#988172]" />
+                            </button>
+                        </div>
+                        <FilterGroup isOpenFilter={isOpenFilter} setIsOpenFilter={setIsOpenFilter} from="sm" />
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }

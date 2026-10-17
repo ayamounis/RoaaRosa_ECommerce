@@ -16,8 +16,12 @@ export interface IProduct {
     createdAt: string
     updatedAt: string
     id: string
-    count: number
+    count?: number
     priceAfterDiscount?: number
+    swatches?: { name: string; hex: string }[]
+    ageRangeLabel?: string
+    isNewIn?: boolean
+    isBestSeller?: boolean
 }
 export interface ISubcategory {
     _id: string

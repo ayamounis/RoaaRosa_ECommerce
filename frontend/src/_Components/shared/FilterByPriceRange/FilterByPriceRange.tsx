@@ -1,21 +1,30 @@
 import { Slider } from "@/_Components/ui/slider";
 
-export default function FilterByPriceRange({ value, setValue }: { value: number[], setValue: (value: number[]) => void }) {
-    return (
-        <div>
-            <h3 className="!text-lg font-medium">Filter By Price</h3>
-            <div className="w-full space-y-3 mt-2">
-                <Slider
-                    value={value}
-                    onValueChange={setValue}
-                    max={50000}
-                    step={100}
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Min: {value[0]}</span>
-                    <span>Max: {value[1]}</span>
-                </div>
-            </div>
+export default function FilterByPriceRange({
+  value,
+  setValue,
+}: {
+  value: number[];
+  setValue: (value: number[]) => void;
+}) {
+  return (
+    <div className='space-y-2'>
+      <h3 className='text-sm font-semibold tracking-wider text-[#2B2320] dark:text-[#FAF6F0] uppercase'>
+        Price (EGP)
+      </h3>
+      <div className='w-full space-y-3 pt-2'>
+        <Slider
+          value={value}
+          onValueChange={setValue}
+          min={400}
+          max={3000}
+          step={50}
+        />
+        <div className='flex justify-between text-xs text-[#988172] font-medium'>
+          <span>{value[0]} EGP</span>
+          <span>{value[1]} EGP</span>
         </div>
-    )
+      </div>
+    </div>
+  );
 }

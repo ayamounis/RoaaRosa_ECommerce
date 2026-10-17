@@ -29,6 +29,9 @@ export default function ClearCartBtn() {
     }, [])
 
     return (
-        <Button onClick={handleClearCart} className="button-primary w-full mt-2 !bg-black cursor-pointer flex items-center hover:!bg-secondary1 hover:!text-text2 border">Clear All Items<Trash /></Button>
-    )
+        <Button onClick={handleClearCart} variant='outline' className="w-full mt-2 py-2.5 rounded-full border border-[#EBDED6] dark:border-[#3D332E] bg-transparent text-[#988172] hover:text-[#C48D80] hover:border-[#C48D80] text-xs font-medium cursor-pointer flex items-center justify-center gap-1.5 transition-colors">
+            <span>Clear Bag</span>
+            <Trash className='w-3.5 h-3.5' />
+        </Button>
+    );
 }

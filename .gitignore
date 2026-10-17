@@ -14,10 +14,11 @@ node_modules/
 /coverage
 
 # next.js and nest.js build outputs
-/.next/
-/out/
+.next/
+out/
 dist/
-/build
+build/
+.turbo/
 
 # misc
 .DS_Store
@@ -40,3 +41,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch scripts and local dumps
+/*.py
+/*.html
+/*.db
+/*.txt
+/*.json
+/*.png
+/*.jpg
+/*.bat
+/chrome_profile/
+/download_*.js
+/extract_*.js
+/find_*.js
+/inspect_*.js
+/parse_*.js
+/retry_*.js
+/search_*.js
+/scripts/
