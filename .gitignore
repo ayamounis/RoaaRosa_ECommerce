@@ -15,14 +15,20 @@ node_modules/
 
 # next.js and nest.js build outputs
 .next/
+**/.next/
 out/
+/out/
 dist/
+**/dist/
 build/
+/build
 .turbo/
 
 # misc
 .DS_Store
 *.pem
+.agents/
+**/.agents/
 
 # debug
 npm-debug.log*

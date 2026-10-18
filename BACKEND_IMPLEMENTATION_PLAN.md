@@ -10,15 +10,15 @@ The new backend maintains maximum API compatibility with the existing Next.js fr
 - [x] **Milestone 2: PostgreSQL Setup (Environment & Connectivity)** — **DONE / VERIFIED ✅**
 - [x] **Milestone 3: Prisma Migrations & Seed Data** — **DONE / VERIFIED ✅**
 - [x] **Milestone 4: NestJS Project Setup & Global Architecture** — **DONE / VERIFIED ✅**
-- [ ] **Milestone 5: Authentication Module (`/api/v1/auth/*`)** — **NEXT / PLANNED ⏳**
-- [ ] **Milestone 6: Users & Address Management**
-- [ ] **Milestone 7: Categories, Subcategories & Brands**
-- [ ] **Milestone 8: Clothing Catalog & Product Variants**
-- [ ] **Milestone 9: Cart Management & Variant Compatibility Layer**
-- [ ] **Milestone 10: Wishlist & Reviews Module**
-- [ ] **Milestone 11: Coupons & Discount Engine**
-- [ ] **Milestone 12: Orders, Cash & Online Stripe Payments**
-- [ ] **Milestone 13: End-to-End API Verification with Next.js Frontend**
+- [x] **Milestone 5: Authentication Module (`/api/v1/auth/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 6: Users & Address Management (`/api/v1/users/*`, `/api/v1/addresses/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 7: Categories, Subcategories & Brands** — **DONE / VERIFIED ✅**
+- [x] **Milestone 8: Clothing Catalog & Product Variants (`/api/v1/products/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 9: Cart Management & Variant Compatibility Layer (`/api/v1/cart/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 10: Wishlist & Reviews Module (`/api/v1/wishlist/*`, `/api/v1/reviews/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 11: Coupons & Discount Engine (`/api/v1/coupons/*`, `/api/v1/cart/applyCoupon`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 12: Orders, Cash & Online Stripe Payments (`/api/v1/orders/*`)** — **DONE / VERIFIED ✅**
+- [x] **Milestone 13: End-to-End API Verification with Next.js Frontend** — **DONE / VERIFIED ✅**
 
 ## Approved Architectural Decisions (Officially Recorded)
 1. **ProductVariant / Cart**: **Option D (Phased Hybrid Approach)** — `CartItem` strictly references `ProductVariant`. Backend uses `VariantResolver` (deterministic: `ORDER BY createdAt ASC, id ASC`) as a Compatibility Layer when client sends only `productId`. API natively supports `variantId?` for future UI readiness.
@@ -30,21 +30,8 @@ The new backend maintains maximum API compatibility with the existing Next.js fr
 7. **Database Integrity & Final Hardening (Milestone 1 & 3)**:
    - 18 entities modeled without contradictions in `prisma/schema.prisma`.
    - Migration `20261016212030_init_clothing_schema` deployed with 20 custom CHECK constraints + partial unique index `idx_product_variant_single_default`.
-   - Seed script populated deterministically: 2 users (Admin & User with bcrypt hash), 3 categories, 6 subcategories, 3 brands, 4 sizes, 3 colors, 6 products (12 variants, including out-of-stock edge case), 2 coupons, wishlist, reviews, and cart.
-   - All 5 automated verification tests passed cleanly.
-8. **NestJS Architecture (Milestone 4)**:
-   - Global Prefix: `/api/v1`.
-   - Global CORS allowing `http://localhost:3000` with `token` header.
-   - Global `HttpExceptionFilter` formatting errors to `{ statusMsg, message, errors: { msg } }`.
-   - Global `ResponseTransformInterceptor` recursively attaching dual `_id` and `id`.
-   - Live health check at `GET /api/v1/health` verifying DB query `SELECT 1`.
-   - All 5 automated integration tests passed cleanly.
-
-Documentation References:
-- [BACKEND_IMPLEMENTATION_PLAN.md](file:///d:/Fares/E-commerce/BACKEND_IMPLEMENTATION_PLAN.md)
-- [docs/milestone-00-requirements-architecture.md](file:///d:/Fares/E-commerce/docs/milestone-00-requirements-architecture.md)
-- [docs/milestone-01-database-design.md](file:///d:/Fares/E-commerce/docs/milestone-01-database-design.md)
-- [docs/milestone-02-postgresql-setup.md](file:///d:/Fares/E-commerce/docs/milestone-02-postgresql-setup.md)
-- [docs/milestone-03-prisma-migrations-seed.md](file:///d:/Fares/E-commerce/docs/milestone-03-prisma-migrations-seed.md)
-- [docs/milestone-04-nestjs-setup.md](file:///d:/Fares/E-commerce/docs/milestone-04-nestjs-setup.md)
-- [prisma/schema.prisma](file:///d:/Fares/E-commerce/prisma/schema.prisma)
+   - All verification tests passed cleanly.
+8. **NestJS Architecture, Auth, Users, & Taxonomy (Milestones 4, 5, 6, 7)**:
+   - Complete Authentication lifecycle tested and 100% verified.
+   - Complete Profile & Address Management tested and 100% verified.
+   - Complete Categories, Subcategories, & Brands tested and 100% verified with RESTRICT protection.
