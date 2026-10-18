@@ -1,10 +1,11 @@
 'use server'
 
 import { ResetPasswordFormType } from "./Reset.types";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export const handleResetPassword = async (values: ResetPasswordFormType & { email: string }) => {
     try {
-        const response = await fetch('https://ecommerce.routemisr.com/api/v1/auth/resetPassword',
+        const response = await fetch(`${API_BASE_URL}/auth/resetPassword`,
             {
                 method: 'PUT',
                 body: JSON.stringify(values),

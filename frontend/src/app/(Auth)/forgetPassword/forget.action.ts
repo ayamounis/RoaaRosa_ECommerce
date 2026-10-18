@@ -1,10 +1,11 @@
 'use server'
 
 import { ForgetFormType } from "./forget.types";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export const handleForgetPassword = async (values: ForgetFormType) => {
     try {
-        const response = await fetch('https://ecommerce.routemisr.com/api/v1/auth/forgotPasswords',
+        const response = await fetch(`${API_BASE_URL}/auth/forgotPasswords`,
             {
                 method: 'POST',
                 body: JSON.stringify(values),

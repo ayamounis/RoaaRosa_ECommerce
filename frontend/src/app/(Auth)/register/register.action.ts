@@ -2,10 +2,11 @@
 
 import { cookies } from "next/headers";
 import { RegisterFormType } from "./register.types";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export const handleRegister = async (values: RegisterFormType) => {
     try {
-        const response = await fetch('https://ecommerce.routemisr.com/api/v1/auth/signup',
+        const response = await fetch(`${API_BASE_URL}/auth/signup`,
             {
                 method: 'POST',
                 body: JSON.stringify(values),

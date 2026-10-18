@@ -1,11 +1,12 @@
 'use server'
 import { getMyUserToken } from "@/utils/utils";
 import { revalidatePath } from "next/cache";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export async function removeProductWishlist(productId: string) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/wishlist/${productId}`, {
+        const res = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
             method: 'DELETE',
             headers: {
                 token: token as string
@@ -21,7 +22,7 @@ export async function removeProductWishlist(productId: string) {
 export async function addProductToWishlist(productId: string) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/wishlist`, {
+        const res = await fetch(`${API_BASE_URL}/wishlist`, {
             method: 'POST',
             headers: {
                 token: token as string,

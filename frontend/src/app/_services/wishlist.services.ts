@@ -1,11 +1,12 @@
 'use server'
 import { getMyUserToken } from "@/utils/utils";
 import { IWishlistItem } from "../_interfaces/wishlist";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export async function getAllWishlistItems(): Promise<IWishlistItem> {
     try {
         const token = await getMyUserToken()
-        const res = await fetch('https://ecommerce.routemisr.com/api/v1/wishlist', {
+        const res = await fetch(`${API_BASE_URL}/wishlist`, {
             headers: {
                 token: token as string
             }

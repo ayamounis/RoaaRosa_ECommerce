@@ -1,6 +1,7 @@
 'use server';
 import { IProduct } from "../_interfaces/products";
 import { GIRLS_PRODUCTS, IGirlsProduct } from "@/data/girlsCatalog";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export interface IProductParams {
     page?: number;
@@ -18,6 +19,31 @@ export interface IProductParams {
 }
 
 export async function getAllProducts(params?: IProductParams): Promise<IProduct[]> {
+    try {
+        if (params && (params.page !== undefined || params.limit !== undefined)) {
+            const queryParams: Record<string, string> = {};
+            if (params.page) queryParams.page = String(params.page);
+            if (params.limit) queryParams.limit = String(params.limit);
+            if (params.search) queryParams.keyword = params.search;
+            if (params.sort) queryParams.sort = params.sort;
+            if (params.category || params["category[in]"]) {
+                queryParams.category = params.category || params["category[in]"]!;
+            }
+            const queryString = new URLSearchParams(queryParams).toString();
+            const response = await fetch(`${API_BASE_URL}/products?${queryString}`, {
+                cache: 'no-cache'
+            });
+            if (response.ok) {
+                const res = await response.json();
+                if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+                    return res.data;
+                }
+            }
+        }
+    } catch {
+        // Fall back to local catalog filtering
+    }
+
     try {
         let results: IGirlsProduct[] = [...GIRLS_PRODUCTS];
 
@@ -103,12 +129,14 @@ export async function GetSpecificProduct(id: string): Promise<IProduct | null> {
             return local;
         }
 
-        // Fallback for legacy items if any
-        const response = await fetch(`https://ecommerce.routemisr.com/api/v1/products/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
             cache: 'no-cache'
         });
-        const res = await response.json();
-        return res.data ?? null;
+        if (response.ok) {
+            const res = await response.json();
+            return res.data ?? null;
+        }
+        return null;
     } catch (error) {
         console.error("Error fetching specific product:", error);
         return null;

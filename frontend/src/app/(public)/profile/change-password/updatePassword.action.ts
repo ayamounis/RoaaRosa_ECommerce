@@ -2,10 +2,11 @@
 
 import { getMyUserToken } from "@/utils/utils"
 import { UpdatePasswordType } from "./updatePassword.types"
+import { API_BASE_URL } from "@/utils/apiConfig"
 export async function UpdatePassword(data:UpdatePasswordType) {
     try {
         const token =await getMyUserToken()
-        const res =await fetch('https://ecommerce.routemisr.com/api/v1/users/changeMyPassword',{
+        const res =await fetch(`${API_BASE_URL}/users/changeMyPassword`,{
             method:'PUT',
             body:JSON.stringify(data),
             headers:{

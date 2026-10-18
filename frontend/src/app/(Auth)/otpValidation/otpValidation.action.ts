@@ -1,10 +1,11 @@
 'use server'
 
 import { OtpValidationFormType } from "./otpValidation.types";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export const handleOtpValidation = async (values: OtpValidationFormType) => {
     try {
-        const response = await fetch('https://ecommerce.routemisr.com/api/v1/auth/verifyResetCode',
+        const response = await fetch(`${API_BASE_URL}/auth/verifyResetCode`,
             {
                 method: 'POST',
                 body: JSON.stringify(values),

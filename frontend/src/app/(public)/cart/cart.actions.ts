@@ -2,12 +2,13 @@
 
 import { getMyUserToken } from "@/utils/utils";
 import { revalidatePath } from "next/cache";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export async function addProductToCart(productId: string) {
     const token = await getMyUserToken()
     if (token) {
         try {
-            const res = await fetch(`https://ecommerce.routemisr.com/api/v1/cart`, {
+            const res = await fetch(`${API_BASE_URL}/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,7 +30,7 @@ export async function addProductToCart(productId: string) {
 export async function removeProductFromCart(id: string) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/cart/${id}`,
+        const res = await fetch(`${API_BASE_URL}/cart/${id}`,
             {
                 method: 'DELETE',
                 headers: {
@@ -49,7 +50,7 @@ export async function removeProductFromCart(id: string) {
 export async function clearCart() {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/cart`, {
+        const res = await fetch(`${API_BASE_URL}/cart`, {
             method: 'DELETE',
             headers: {
                 token: token as string
@@ -67,7 +68,7 @@ export async function clearCart() {
 export async function updateProductQuantity(id: string, count: number) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/cart/${id}`,
+        const res = await fetch(`${API_BASE_URL}/cart/${id}`,
             {
                 method: 'PUT',
                 headers: {

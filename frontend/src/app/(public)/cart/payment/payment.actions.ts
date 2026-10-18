@@ -2,6 +2,7 @@
 
 import { getMyUserToken } from "@/utils/utils"
 import { revalidatePath } from "next/cache"
+import { API_BASE_URL } from "@/utils/apiConfig"
 
 type CreateCashOrderBody = {
     details: string,
@@ -11,7 +12,7 @@ type CreateCashOrderBody = {
 export async function CreateCashOrder(id: string, body: CreateCashOrderBody) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/orders/${id}`, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
@@ -28,7 +29,7 @@ export async function CreateCashOrder(id: string, body: CreateCashOrderBody) {
 export async function CreateOnlineOrder(id: string, body: CreateCashOrderBody) {
     try {
         const token = await getMyUserToken()
-        const res = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${id}?url=http://localhost:3000`, {
+        const res = await fetch(`${API_BASE_URL}/orders/checkout-session/${id}?url=http://localhost:3000`, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {

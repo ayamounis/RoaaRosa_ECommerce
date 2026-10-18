@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'ecommerce.routemisr.com',
-        pathname: '/Route-Academy-**/**',
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -18,7 +18,17 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        pathname: '/**',
+      },
     ],
   },
 

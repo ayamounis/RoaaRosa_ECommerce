@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { jwtDecode } from 'jwt-decode'
+import { API_BASE_URL } from '@/utils/apiConfig'
 
 export const nextAuthConfig: NextAuthOptions = {
     providers: [
@@ -8,7 +9,7 @@ export const nextAuthConfig: NextAuthOptions = {
             name: 'Exclusive',
             authorize: async (credentials) => {
                 try {
-                    const res = await fetch(`https://ecommerce.routemisr.com/api/v1/auth/signin`, {
+                    const res = await fetch(`${API_BASE_URL}/auth/signin`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

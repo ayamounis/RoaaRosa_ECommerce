@@ -2,10 +2,11 @@
 
 import { getMyUserToken } from "@/utils/utils"
 import { profileSchema } from "./profile.types"
+import { API_BASE_URL } from "@/utils/apiConfig"
 export async function UpdateProfileInfo(data:profileSchema) {
     try {
         const token =await getMyUserToken()
-        const res =await fetch('https://ecommerce.routemisr.com/api/v1/users/updateMe/',{
+        const res =await fetch(`${API_BASE_URL}/users/updateMe`,{
             method:'PUT',
             body:JSON.stringify(data),
             headers:{
