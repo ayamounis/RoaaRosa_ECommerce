@@ -11,6 +11,7 @@ import BottomFilter from "@/_Components/shared/BottomFilter/BottomFilter";
 import { ThemeProvider } from "@/_Components/theme-provider";
 import AOSInit from "@/_Components/shared/AOSInit/AOSInit";
 import ScrollToTop from "@/_Components/shared/ScrollToTop/ScrollToTop";
+import CustomerChatbot from "@/_Components/chatbot/CustomerChatbot";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -110,7 +111,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${poppins.variable} ${playfair.variable} bg-background text-foreground antialiased`}
+        className={`${poppins.variable} ${playfair.variable} bg-background text-foreground antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
@@ -127,6 +128,7 @@ export default function RootLayout({
             <Toaster />
             <Footer />
             <ScrollToTop />
+            <CustomerChatbot />
             <Suspense fallback={null}>
               <BottomFilter />
             </Suspense>

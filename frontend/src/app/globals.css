@@ -346,4 +346,25 @@ body {
   100% {
     transform: rotate(360deg);
   }
-} 
+}
+
+/* Swiper slider stability and prevent slide overlapping in RTL */
+.mySwiper {
+  width: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.mySwiper .swiper-wrapper {
+  display: flex !important;
+  align-items: stretch !important;
+  box-sizing: border-box !important;
+}
+
+.mySwiper .swiper-slide {
+  height: auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
