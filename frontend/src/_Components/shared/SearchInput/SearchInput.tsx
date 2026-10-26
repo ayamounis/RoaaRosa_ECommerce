@@ -60,7 +60,7 @@ export default function SearchInput({ searchKeyword, setSearchKeyword }: SearchI
                     onInput={handleInput}
                     type='search'
                     className='w-full pl-10 pr-4 py-2.5 h-11 text-sm bg-[#FAF7F2] dark:bg-[#2D2623] border border-[#EBDED6] dark:border-[#3D332E] rounded-full shadow-xs focus-visible:ring-1 focus-visible:ring-[#C48D80] placeholder:text-[#988172]/70 text-[#2B2320] dark:text-[#FAF6F0]'
-                    placeholder="Search for girls' dresses, coats, shoes, pyjamas..."
+                    placeholder="Search for girls' dresses, coats, knitwear, pyjamas..."
                 />
                 <Search size={18} className='absolute left-3.5 text-[#988172]' />
             </div>

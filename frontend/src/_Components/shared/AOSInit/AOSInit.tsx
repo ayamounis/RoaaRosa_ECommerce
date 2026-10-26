@@ -10,11 +10,11 @@ export default function AOSInit() {
 
   useEffect(() => {
     AOS.init({
-      duration: 800,
-      once: false,
-      offset: 50,
-      easing: 'ease-out-cubic',
-      mirror: true,
+      duration: 600,
+      once: true,
+      offset: 40,
+      easing: 'ease-out',
+      mirror: false,
       delay: 0,
     });
   }, []);

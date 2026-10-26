@@ -6,7 +6,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut, useSession } from 'next-auth/react';
 import { toast } from 'sonner';
-import { ChevronDown, Heart, ShoppingBag, User, Menu, Sparkles } from 'lucide-react';
+import { ChevronDown, Heart, ShoppingBag, User, Menu, Sparkles, LayoutDashboard } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 import SearchInput from '@/_Components/shared/SearchInput/SearchInput';
 import { Button } from '@/_Components/ui/button';
@@ -30,24 +31,29 @@ import { updateWishlistCountAsync } from '@/redux/slices/WishlistSlice';
 import type { AppDispatch, RootState } from '@/redux/store';
 
 const DEPARTMENT_LINKS = [
-  { slug: 'all', title: 'All Girls', href: '/?category=all' },
-  { slug: 'new-in', title: 'New In', href: '/?category=new-in', highlight: true },
-  { slug: 'baby', title: 'Baby (0-2 Yrs)', href: '/?category=baby' },
-  { slug: 'younger', title: 'Younger Girls (3-7 Yrs)', href: '/?category=younger' },
-  { slug: 'older', title: 'Older Girls (8-16 Yrs)', href: '/?category=older' },
-  { slug: 'dresses', title: 'Dresses', href: '/?category=dresses' },
-  { slug: 'tops', title: 'Tops & T-Shirts', href: '/?category=tops' },
-  { slug: 'knitwear', title: 'Knitwear', href: '/?category=knitwear' },
-  { slug: 'coats', title: 'Coats & Jackets', href: '/?category=coats' },
-  { slug: 'sets', title: 'Sets & Outfits', href: '/?category=sets' },
-  { slug: 'shoes', title: 'Shoes & Boots', href: '/?category=shoes' },
-  { slug: 'nightwear', title: 'Nightwear', href: '/?category=nightwear' },
-  { slug: 'occasions', title: 'Occasions', href: '/?category=occasions' },
-  { slug: 'sale', title: 'Sale', href: '/?category=sale', isSale: true },
+  { slug: 'all', title: 'All Girls', titleAr: 'كل تشكيلات البنات', href: '/?category=all' },
+  { slug: 'new-in', title: 'New In', titleAr: 'وصل حديثاً', href: '/?category=new-in', highlight: true },
+  { slug: 'baby', title: 'Baby (0-2 Yrs)', titleAr: 'الرضع (0-2 سنة)', href: '/?category=baby' },
+  { slug: 'younger', title: 'Younger Girls (3-7 Yrs)', titleAr: 'الصغيرات (3-7 سنوات)', href: '/?category=younger' },
+  { slug: 'older', title: 'Older Girls (8-16 Yrs)', titleAr: 'الكبار (8-16 سنة)', href: '/?category=older' },
+  { slug: 'dresses', title: 'Dresses', titleAr: 'فساتين', href: '/?category=dresses' },
+  { slug: 'tops', title: 'Tops & T-Shirts', titleAr: 'بلوزات وتيشيرتات', href: '/?category=tops' },
+  { slug: 'knitwear', title: 'Knitwear', titleAr: 'ملابس صوف وتريكو', href: '/?category=knitwear' },
+  { slug: 'coats', title: 'Coats & Jackets', titleAr: 'معاطف وجواكت', href: '/?category=coats' },
+  { slug: 'sets', title: 'Sets & Outfits', titleAr: 'أطقم وتنسيقات', href: '/?category=sets' },
+  { slug: 'nightwear', title: 'Nightwear', titleAr: 'ملابس نوم', href: '/?category=nightwear' },
+  { slug: 'occasions', title: 'Occasions', titleAr: 'مناسبات وسهرات', href: '/?category=occasions' },
+  { slug: 'sale', title: 'Sale', titleAr: 'تخفيضات', href: '/?category=sale', isSale: true },
 ];
 
 function NavbarInner({ currentCategory }: { currentCategory: string }) {
   const { data: isAuth } = useSession();
+  const isAdmin = Boolean(
+    isAuth?.user &&
+    ((isAuth.user as { role?: string }).role === 'ADMIN' || isAuth.user.email === 'admin@ecommerce.com')
+  );
+  const { language } = useLanguage();
+  const isAr = language === 'ar';
   const dispatch = useDispatch<AppDispatch>();
   const [isOpenNav, setIsOpenNav] = useState(false);
   const pathname = usePathname();
@@ -212,7 +218,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                                 : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
                             }`}
                           >
-                            {link.title}
+                            {isAr ? link.titleAr : link.title}
                           </Link>
                         );
                       })}
@@ -221,6 +227,23 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                 </div>
 
                 <SheetFooter className='p-5 border-t border-[#EBDED6] dark:border-[#3D332E] bg-white/50 dark:bg-black/20'>
+                  {/* Quick Dashboard link in mobile (Admin / Owner Only) */}
+                  {isAdmin && (
+                    <div className='w-full mb-3'>
+                      <Button
+                        asChild
+                        onClick={handleCloseMenu}
+                        variant='outline'
+                        className='w-full border-[#C48D80] text-[#C48D80] flex items-center justify-center gap-2'
+                      >
+                        <Link href='/dashboard'>
+                          <LayoutDashboard className='w-4 h-4' />
+                          <span>{isAr ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+
                   {isAuth ? (
                     <Button
                       onClick={() => {
@@ -230,7 +253,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                       variant='outline'
                       className='w-full border-[#C48D80] text-[#C48D80]'
                     >
-                      Logout
+                      {isAr ? 'تسجيل الخروج' : 'Logout'}
                     </Button>
                   ) : (
                     <div className='grid grid-cols-2 gap-2 w-full'>
@@ -240,14 +263,14 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                         variant='outline'
                         className='text-xs border-[#EBDED6]'
                       >
-                        <Link href='/register'>Register</Link>
+                        <Link href='/register'>{isAr ? 'إنشاء حساب' : 'Register'}</Link>
                       </Button>
                       <Button
                         asChild
                         onClick={handleCloseMenu}
                         className='text-xs bg-[#C48D80] hover:bg-[#B27B6E] text-white'
                       >
-                        <Link href='/login'>Sign In</Link>
+                        <Link href='/login'>{isAr ? 'تسجيل الدخول' : 'Sign In'}</Link>
                       </Button>
                     </div>
                   )}
@@ -272,37 +295,59 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
             <SearchInput />
           </div>
 
-          {/* Right Utilities (Account, Favourites, Bag) */}
-          <div className='flex items-center gap-2 sm:gap-4 flex-shrink-0'>
+          {/* Right Utilities (Dashboard, Account, Favourites, Bag) */}
+          <div className='flex items-center gap-2 sm:gap-3 flex-shrink-0'>
+            {/* Quick Admin Dashboard Link (Only visible to Website Owner / Admin) */}
+            {isAdmin && (
+              <Link
+                href='/dashboard'
+                className='hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FAF7F2] dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] hover:border-[#C48D80] text-xs font-semibold text-[#2B2320] dark:text-[#FAF6F0] transition-colors'
+                title={isAr ? 'لوحة تحكم الإدارة والتحليلات' : 'Admin & Performance Dashboard'}
+              >
+                <LayoutDashboard className='w-3.5 h-3.5 text-[#C48D80]' />
+                <span>{isAr ? 'لوحة التحكم' : 'Dashboard'}</span>
+              </Link>
+            )}
+
             {/* Account */}
             {isAuth ? (
               <div className='relative'>
                 <DropdownMenu>
                   <DropdownMenuTrigger className='flex items-center gap-1.5 p-2 rounded-full hover:bg-[#F5EFEB] dark:hover:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] transition-colors cursor-pointer outline-none'>
                     <User className='w-5 h-5 text-[#988172]' />
-                    <span className='hidden xl:inline text-xs font-medium'>My Account</span>
+                    <span className='hidden xl:inline text-xs font-medium'>
+                      {isAr ? 'حسابي' : 'My Account'}
+                    </span>
                     <ChevronDown className='w-3.5 h-3.5 text-[#988172]' />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align='end'
-                    className='w-48 bg-white dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] shadow-lg'
+                    className='w-52 bg-white dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] shadow-lg'
                   >
                     <DropdownMenuLabel className='text-xs text-[#988172]'>
-                      ROAROSA Account
+                      {isAr ? 'حساب رواروسا' : 'ROAROSA Account'}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className='cursor-pointer text-xs font-semibold text-[#C48D80]'>
+                        <Link href='/dashboard' className='flex items-center gap-2'>
+                          <LayoutDashboard className='w-4 h-4 text-[#C48D80]' />
+                          <span>{isAr ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild className='cursor-pointer text-xs'>
-                      <Link href='/profile'>Profile Settings</Link>
+                      <Link href='/profile'>{isAr ? 'إعدادات الحساب' : 'Profile Settings'}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className='cursor-pointer text-xs'>
-                      <Link href='/allorders'>My Orders</Link>
+                      <Link href='/allorders'>{isAr ? 'طلباتي ومشترياتي' : 'My Orders'}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
                       className='cursor-pointer text-xs text-[#C48D80] font-medium'
                     >
-                      Sign Out
+                      {isAr ? 'تسجيل الخروج' : 'Sign Out'}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -313,7 +358,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                 className='hidden sm:flex items-center gap-1.5 p-2 rounded-full hover:bg-[#F5EFEB] dark:hover:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] transition-colors'
               >
                 <User className='w-5 h-5 text-[#988172]' />
-                <span className='text-xs font-medium'>Sign In</span>
+                <span className='text-xs font-medium'>{isAr ? 'تسجيل الدخول' : 'Sign In'}</span>
               </Link>
             )}
 
@@ -323,7 +368,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
               className={`flex items-center gap-1.5 p-2 rounded-full hover:bg-[#F5EFEB] dark:hover:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] relative transition-colors ${
                 pathname === '/wishlist' ? 'text-[#C48D80]' : ''
               }`}
-              title='Favourites'
+              title={isAr ? 'المفضلة' : 'Favourites'}
             >
               <Heart
                 className={`w-5 h-5 ${
@@ -332,7 +377,9 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                     : 'text-[#988172]'
                 }`}
               />
-              <span className='hidden xl:inline text-xs font-medium'>Favourites</span>
+              <span className='hidden xl:inline text-xs font-medium'>
+                {isAr ? 'المفضلة' : 'Favourites'}
+              </span>
               {wishlistCount > 0 && (
                 <span className='absolute -top-0.5 -right-0.5 bg-[#C48D80] text-white text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1'>
                   {wishlistCount}
@@ -346,7 +393,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
               className={`flex items-center gap-1.5 p-2 rounded-full hover:bg-[#F5EFEB] dark:hover:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] relative transition-colors ${
                 pathname === '/cart' ? 'text-[#C48D80]' : ''
               }`}
-              title='Shopping Bag'
+              title={isAr ? 'حقيبة التسوق' : 'Shopping Bag'}
             >
               <ShoppingBag
                 className={`w-5 h-5 ${
@@ -355,7 +402,9 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                     : 'text-[#988172]'
                 }`}
               />
-              <span className='hidden xl:inline text-xs font-medium'>Bag</span>
+              <span className='hidden xl:inline text-xs font-medium'>
+                {isAr ? 'الحقيبة' : 'Bag'}
+              </span>
               {count > 0 && (
                 <span className='absolute -top-0.5 -right-0.5 bg-[#2B2320] dark:bg-[#C48D80] text-white text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1'>
                   {count}
@@ -396,7 +445,7 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                       className={`w-3 h-3 ${isCurrent ? 'text-white' : 'text-[#C48D80]'}`}
                     />
                   )}
-                  <span>{item.title}</span>
+                  <span>{isAr ? item.titleAr : item.title}</span>
                 </Link>
               );
             })}
