@@ -1,27 +1,24 @@
 export const dynamic = "force-dynamic";
 
-import { Inter } from "next/font/google"
 import PaymentForm from "./PaymentForm"
 import { getAllAddress } from "@/app/_services/address.services"
 import AddressList from "../../profile/address/AddressList"
+import PaymentClientHeader from "./PaymentClientHeader"
 
-const inter = Inter({
-    subsets: ['latin'],
-    weight: '500'
-})
 export default async function Payment() {
     const res = await getAllAddress()
     const addresses = res?.data
     return (
-        <div className="min-h-110  my-5 rounded-2xl py-10">
-            <h1 className={`${inter.className} text-4xl text-text2`}>Billing Details</h1>
-            <div className="mb-6 mt-2 w-full sm:w-100 flex flex-wrap">
+        <div className="py-8 sm:py-12 bg-[#FBF9F3] dark:bg-[#1F1917] min-h-screen">
+            <div className="container max-w-7xl">
+                <PaymentClientHeader />
                 {addresses && addresses.length > 0 && (
-                    <AddressList address={addresses} />
+                    <div className="mb-6 w-full sm:w-100 flex flex-wrap">
+                        <AddressList address={addresses} />
+                    </div>
                 )}
+                <PaymentForm />
             </div>
-            <PaymentForm />
-        </div >
+        </div>
     )
 }
-
