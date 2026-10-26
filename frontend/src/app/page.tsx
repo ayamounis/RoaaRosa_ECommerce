@@ -21,7 +21,7 @@ export default async function Home({ searchParams }: HomePageProps) {
       : "all";
 
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex flex-col w-full overflow-x-hidden'>
       {/* 1. Next Direct Signature Hero Campaign: THE GIRLS' SHOP (Dynamic Category Sync) */}
       <HeroBanner activeCategory={category} />
 

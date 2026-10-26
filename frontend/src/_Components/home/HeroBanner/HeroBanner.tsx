@@ -5,12 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Play, Pause, Volume2, VolumeX, Film, Image as ImageIcon, ChevronDown } from 'lucide-react';
 import { getCategoryHeroConfig } from '@/data/categoryHeroConfig';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface HeroBannerProps {
   activeCategory?: string;
 }
 
 export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) {
+  const { language, isRtl } = useLanguage();
+  const isAr = language === 'ar';
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [activeMedia, setActiveMedia] = useState<'video' | 'photo'>('video');
@@ -117,7 +121,7 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
           )}
 
           {/* Editorial Gradient Overlays */}
-          <div className='absolute inset-0 bg-gradient-to-r from-[#2B2320]/90 via-[#2B2320]/55 to-transparent' />
+          <div className={`absolute inset-0 ${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#2B2320]/90 via-[#2B2320]/55 to-transparent`} />
           <div className='absolute inset-0 bg-gradient-to-t from-[#2B2320]/60 via-transparent to-transparent' />
           <div className='absolute inset-0 bg-gradient-to-t from-[#FBF9F3] via-transparent to-transparent opacity-40 dark:from-[#1F1917]' />
         </div>
@@ -131,7 +135,7 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
               className='inline-flex items-center gap-2 bg-[#FAF7F2]/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-medium tracking-widest uppercase text-[#FBF9F3] border border-white/20 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-500'
             >
               <span className='w-2 h-2 rounded-full bg-[#E5C2AF] animate-pulse' />
-              <span>{heroConfig.badge}</span>
+              <span>{isAr ? heroConfig.badgeAr || heroConfig.badge : heroConfig.badge}</span>
             </div>
 
             {/* Headline */}
@@ -139,7 +143,7 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
               key={`title-${heroConfig.id}`}
               className='font-serif text-3xl sm:text-5xl lg:text-6xl font-normal tracking-wide text-white leading-tight animate-in fade-in slide-in-from-bottom-3 duration-600'
             >
-              {heroConfig.headline}
+              {isAr ? heroConfig.headlineAr || heroConfig.headline : heroConfig.headline}
             </h1>
 
             {/* Subheadline */}
@@ -147,16 +151,16 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
               key={`desc-${heroConfig.id}`}
               className='text-sm sm:text-base text-[#FAF7F2]/90 max-w-lg font-light leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700'
             >
-              {heroConfig.subheadline}
+              {isAr ? heroConfig.subheadlineAr || heroConfig.subheadline : heroConfig.subheadline}
             </p>
 
             {/* Tag Pills */}
-            {heroConfig.tagPills && heroConfig.tagPills.length > 0 && (
+            {((isAr ? heroConfig.tagPillsAr : heroConfig.tagPills) || heroConfig.tagPills)?.length > 0 && (
               <div
                 key={`tags-${heroConfig.id}`}
                 className='flex flex-wrap items-center gap-2 pt-1 animate-in fade-in slide-in-from-bottom-4 duration-700'
               >
-                {heroConfig.tagPills.map((pill, idx) => (
+                {(isAr && heroConfig.tagPillsAr ? heroConfig.tagPillsAr : heroConfig.tagPills).map((pill, idx) => (
                   <span
                     key={idx}
                     className='px-3 py-1 rounded-full text-[11px] font-medium tracking-wide bg-white/15 backdrop-blur-xs text-[#FAF7F2] border border-white/15'
@@ -176,20 +180,20 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
                 href={heroConfig.primaryCta.href}
                 className='inline-flex items-center justify-center px-5 py-3 rounded-full bg-white text-[#2B2320] text-xs sm:text-sm font-semibold hover:bg-[#E5C2AF] transition-all duration-200 shadow-md active:scale-95'
               >
-                {heroConfig.primaryCta.label}
+                {isAr ? heroConfig.primaryCta.labelAr || heroConfig.primaryCta.label : heroConfig.primaryCta.label}
               </Link>
               <Link
                 href={heroConfig.secondaryCta.href}
                 className='inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#2B2320]/80 backdrop-blur-md text-white border border-white/30 text-xs sm:text-sm font-semibold hover:bg-[#2B2320] transition-all duration-200 shadow-md active:scale-95'
               >
-                {heroConfig.secondaryCta.label}
+                {isAr ? heroConfig.secondaryCta.labelAr || heroConfig.secondaryCta.label : heroConfig.secondaryCta.label}
               </Link>
               {heroConfig.tertiaryCta && (
                 <Link
                   href={heroConfig.tertiaryCta.href}
                   className='inline-flex items-center justify-center px-5 py-3 rounded-full bg-[#C48D80] text-white text-xs sm:text-sm font-semibold hover:bg-[#B27B6E] transition-all duration-200 shadow-md active:scale-95'
                 >
-                  {heroConfig.tertiaryCta.label}
+                  {isAr ? heroConfig.tertiaryCta.labelAr || heroConfig.tertiaryCta.label : heroConfig.tertiaryCta.label}
                 </Link>
               )}
             </div>
@@ -205,14 +209,14 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
           data-aos-delay='500'
         >
           <span className='text-[10px] uppercase tracking-widest font-medium'>
-            Scroll to explore
+            {isAr ? 'مرري للأسفل للاستكشاف' : 'Scroll to explore'}
           </span>
           <ChevronDown className='w-4 h-4 animate-bounce' />
         </button>
 
         {/* Floating Video & Media Controller */}
         <div
-          className='absolute bottom-6 right-6 z-20 flex items-center gap-2 bg-[#2B2320]/60 backdrop-blur-md border border-white/20 p-1.5 rounded-full text-white shadow-xl'
+          className={`absolute bottom-6 ${isRtl ? 'left-6' : 'right-6'} z-20 flex items-center gap-2 bg-[#2B2320]/60 backdrop-blur-md border border-white/20 p-1.5 rounded-full text-white shadow-xl`}
           data-aos='fade-left'
           data-aos-delay='450'
         >
@@ -222,18 +226,18 @@ export default function HeroBanner({ activeCategory = 'all' }: HeroBannerProps) 
               setActiveMedia(activeMedia === 'video' ? 'photo' : 'video');
               setIsPlaying(true);
             }}
-            title={activeMedia === 'video' ? 'Switch to Lookbook Photo' : 'Switch to Campaign Film'}
+            title={activeMedia === 'video' ? (isAr ? 'عرض الصور' : 'Switch to Lookbook Photo') : (isAr ? 'عرض الفيديو' : 'Switch to Campaign Film')}
             className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide bg-white/10 hover:bg-white/20 transition-colors cursor-pointer'
           >
             {activeMedia === 'video' ? (
               <>
                 <Film className='w-3.5 h-3.5 text-[#E5C2AF]' />
-                <span>Film</span>
+                <span>{isAr ? 'فيديو' : 'Film'}</span>
               </>
             ) : (
               <>
                 <ImageIcon className='w-3.5 h-3.5 text-[#E5C2AF]' />
-                <span>Still</span>
+                <span>{isAr ? 'صور' : 'Still'}</span>
               </>
             )}
           </button>

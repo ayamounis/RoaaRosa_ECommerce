@@ -6,15 +6,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import SectionSlider from '../SectionSlider/SectionSlider';
 import ProductCard from '@/_Components/shared/ProductCard/ProductCard';
 import { IProduct } from '@/app/_interfaces/products';
-
-const FILTER_PILLS = [
-  { id: 'all', label: 'All Trending' },
-  { id: 'dresses', label: 'Dresses' },
-  { id: 'tops', label: 'Tops & Tees' },
-  { id: 'knitwear', label: 'Knits & Cardigans' },
-  { id: 'sets', label: 'Sets & Outfits' },
-  { id: 'occasions', label: 'Occasionwear' },
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 function getCategoryFilterMatch(cat?: string): string {
   if (!cat) return 'all';
@@ -36,6 +28,18 @@ export default function GirlsTrendingClient({
   initialProducts,
   activeCategory = 'all',
 }: GirlsTrendingClientProps) {
+  const { language, isRtl } = useLanguage();
+  const isAr = language === 'ar';
+
+  const FILTER_PILLS = [
+    { id: 'all', label: isAr ? 'كل التشكيلات' : 'All Trending' },
+    { id: 'dresses', label: isAr ? 'فساتين' : 'Dresses' },
+    { id: 'tops', label: isAr ? 'بلوزات وتيشيرتات' : 'Tops & Tees' },
+    { id: 'knitwear', label: isAr ? 'تريكو وصوف' : 'Knits & Cardigans' },
+    { id: 'sets', label: isAr ? 'أطقم وتنسيقات' : 'Sets & Outfits' },
+    { id: 'occasions', label: isAr ? 'مناسبات وسهرات' : 'Occasionwear' },
+  ];
+
   const [activeFilter, setActiveFilter] = useState(() =>
     getCategoryFilterMatch(activeCategory)
   );
@@ -116,10 +120,10 @@ export default function GirlsTrendingClient({
         <div>
           <div className='flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.25em] text-[#C48D80] uppercase'>
             <Sparkles className='w-3 h-3' />
-            <span>Best Sellers</span>
+            <span>{isAr ? 'الأكثر مبيعاً' : 'Best Sellers'}</span>
           </div>
           <h2 className='font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2B2320] dark:text-[#FAF6F0] mt-1'>
-            Most Loved in Girls
+            {isAr ? 'الأكثر طلباً ومحبة للبنات' : 'Most Loved in Girls'}
           </h2>
         </div>
 
@@ -146,7 +150,7 @@ export default function GirlsTrendingClient({
             href='/products'
             className='hidden sm:inline-flex text-xs font-semibold text-[#C48D80] hover:text-[#B27B6E] underline underline-offset-4'
           >
-            View All ({initialProducts.length})
+            {isAr ? `عرض الكل (${initialProducts.length})` : `View All (${initialProducts.length})`}
           </Link>
           <div className='flex gap-2'>
             <button

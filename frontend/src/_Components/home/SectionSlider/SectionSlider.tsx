@@ -4,18 +4,19 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import { Autoplay, FreeMode, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ISectionSliderProps {
-    uniqueId: string,
-    items: React.ReactNode[] | undefined ;
+    uniqueId: string;
+    items: React.ReactNode[] | undefined;
     slidesPerView?: number;
     spaceBetween?: number;
     rows?: number;
     autoplay?: boolean;
     navigation?: boolean;
     breakpoints?: Record<string, { slidesPerView: number }>;
-
 }
+
 export default function SectionSlider({
     uniqueId,
     items,
@@ -28,8 +29,12 @@ export default function SectionSlider({
         1024: { slidesPerView: 3.5 },
     },
 }: ISectionSliderProps) {
+    const { isRtl } = useLanguage();
+
     return (
         <Swiper
+            key={`${uniqueId}-${isRtl ? 'rtl' : 'ltr'}`}
+            dir={isRtl ? 'rtl' : 'ltr'}
             slidesPerView={slidesPerView}
             spaceBetween={spaceBetween}
             freeMode={true}
@@ -39,19 +44,18 @@ export default function SectionSlider({
             }}
             grid={rows > 1 ? { rows, fill: 'row' } : undefined}
             modules={[FreeMode, Navigation, Autoplay]}
-            className="mySwiper"
+            className="mySwiper w-full"
             navigation={{
                 nextEl: `.review-next-${uniqueId}`,
                 prevEl: `.review-prev-${uniqueId}`,
             }}
             breakpoints={breakpoints}
         >
-            {
-                items?.map((item, i) => (
-                    <SwiperSlide key={i}>{item}</SwiperSlide>
-                ))
-            }
-
+            {items?.map((item, i) => (
+                <SwiperSlide key={i} className="!h-auto flex justify-center">
+                    {item}
+                </SwiperSlide>
+            ))}
         </Swiper>
-    )
+    );
 }

@@ -11,6 +11,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SliderCard from '../SliderCard/SliderCard';
 import { StaticImageData } from 'next/image';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export type Banner = {
     title: string;
     desc: string;
@@ -21,6 +23,7 @@ export type Banner = {
 };
 
 export default function MainSlider() {
+    const { isRtl } = useLanguage();
 
     const Banners = [{
         title: 'iPhone 14 Series',
@@ -59,7 +62,10 @@ export default function MainSlider() {
         height: 400
     }]
     return (
-        <Swiper className='w-full h-86 '
+        <Swiper
+            key={isRtl ? 'rtl-main' : 'ltr-main'}
+            dir={isRtl ? 'rtl' : 'ltr'}
+            className='w-full h-86 '
             modules={[Pagination, Autoplay]}
             spaceBetween={50}
             slidesPerView={1}

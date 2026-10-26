@@ -1,8 +1,14 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function TrendSpotlight() {
+  const { language, isRtl } = useLanguage();
+  const isAr = language === 'ar';
+
   return (
     <section className='py-14 sm:py-20 bg-[#FBF9F3] dark:bg-[#1F1917] transition-colors'>
       <div className='container'>
@@ -13,14 +19,16 @@ export default function TrendSpotlight() {
           <div>
             <div className='flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.25em] text-[#C48D80] uppercase'>
               <Sparkles className='w-3 h-3' />
-              <span>Editorial Spotlights</span>
+              <span>{isAr ? 'مختارات الموسم' : 'Editorial Spotlights'}</span>
             </div>
             <h2 className='font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2B2320] dark:text-[#FAF6F0] mt-1'>
-              The Edits
+              {isAr ? 'مجموعات مميزة' : 'The Edits'}
             </h2>
           </div>
           <p className='text-xs sm:text-sm text-[#988172]'>
-            Signature curations designed for everyday warmth and magical childhood memories
+            {isAr
+              ? 'تنسيقات مصممة للدفء اليومي وذكريات طفولية ساحرة تدوم طويلاً'
+              : 'Signature curations designed for everyday warmth and magical childhood memories'}
           </p>
         </div>
 
@@ -44,21 +52,27 @@ export default function TrendSpotlight() {
 
             <div className='relative z-10 text-white space-y-3'>
               <span className='inline-block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#E5C2AF]'>
-                New Season Highlight
+                {isAr ? 'أبرز إطلالات الموسم' : 'New Season Highlight'}
               </span>
               <h3 className='font-serif text-2xl sm:text-3xl font-bold text-white'>
-                The Rose Edit
+                {isAr ? 'مجموعة روز الوردية' : 'The Rose Edit'}
               </h3>
               <p className='text-xs sm:text-sm text-[#FAF7F2]/90 max-w-md font-light leading-relaxed'>
-                Gentle everyday staples tailored in breathable washed linen, baby rib knits, and warm muted terracotta hues.
+                {isAr
+                  ? 'أساسيات يومية ناعمة مصممة من الكتان المغسول خفيف الوزن، وتريكو مضلع ناعم، مع ألوان التيراكوتا الهادئة والدافئة.'
+                  : 'Gentle everyday staples tailored in breathable washed linen, baby rib knits, and warm muted terracotta hues.'}
               </p>
               <div className='pt-2'>
                 <Link
                   href='/products?color=dusty-rose'
                   className='inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#2B2320] text-xs font-semibold hover:bg-[#E5C2AF] transition-all shadow-md active:scale-95 group/btn'
                 >
-                  <span>Shop The Rose Edit</span>
-                  <ArrowRight className='w-3.5 h-3.5 transform group-hover/btn:translate-x-1 transition-transform' />
+                  <span>{isAr ? 'تسوق مجموعة روز' : 'Shop The Rose Edit'}</span>
+                  {isRtl ? (
+                    <ArrowLeft className='w-3.5 h-3.5 transform group-hover/btn:-translate-x-1 transition-transform' />
+                  ) : (
+                    <ArrowRight className='w-3.5 h-3.5 transform group-hover/btn:translate-x-1 transition-transform' />
+                  )}
                 </Link>
               </div>
             </div>
@@ -83,21 +97,27 @@ export default function TrendSpotlight() {
 
             <div className='relative z-10 text-white space-y-3'>
               <span className='inline-block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#E5C2AF]'>
-                Party & Celebrations
+                {isAr ? 'حفلات واحتفالات مميزة' : 'Party & Celebrations'}
               </span>
               <h3 className='font-serif text-2xl sm:text-3xl font-bold text-white'>
-                Special Occasionwear
+                {isAr ? 'أزياء المناسبات والسهرات' : 'Special Occasionwear'}
               </h3>
               <p className='text-xs sm:text-sm text-[#FAF7F2]/90 max-w-md font-light leading-relaxed'>
-                Flower girl designs, tiered tulle twirl dresses, and silk ribbon details made for moments worth remembering.
+                {isAr
+                  ? 'فساتين وصيفات العروس، طبقات التول المنفوشة التي تدور مع الحركة، وشرائط الحرير المصممة للحظات السعيدة.'
+                  : 'Flower girl designs, tiered tulle twirl dresses, and silk ribbon details made for moments worth remembering.'}
               </p>
               <div className='pt-2'>
                 <Link
                   href='/products?category=occasions'
                   className='inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#C48D80] text-white text-xs font-semibold hover:bg-[#B27B6E] transition-all shadow-md active:scale-95 group/btn'
                 >
-                  <span>Shop Occasions</span>
-                  <ArrowRight className='w-3.5 h-3.5 transform group-hover/btn:translate-x-1 transition-transform' />
+                  <span>{isAr ? 'تسوق ملابس المناسبات' : 'Shop Occasions'}</span>
+                  {isRtl ? (
+                    <ArrowLeft className='w-3.5 h-3.5 transform group-hover/btn:-translate-x-1 transition-transform' />
+                  ) : (
+                    <ArrowRight className='w-3.5 h-3.5 transform group-hover/btn:translate-x-1 transition-transform' />
+                  )}
                 </Link>
               </div>
             </div>

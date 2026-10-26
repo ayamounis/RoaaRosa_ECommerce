@@ -1,10 +1,15 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface TrendingItem {
   id: string;
   title: string;
+  titleAr: string;
   subtitle: string;
+  subtitleAr: string;
   href: string;
   image: string;
   alt: string;
@@ -14,7 +19,9 @@ const TRENDING_ITEMS: TrendingItem[] = [
   {
     id: "sets",
     title: "SETS & OUTFITS",
+    titleAr: "أطقم وتنسيقات البنات",
     subtitle: "SHOP NOW",
+    subtitleAr: "تسوقي الآن",
     href: "/products?category=sets",
     image: "/images/next/sets-and-outfits-shop-now.jpg",
     alt: "Young girl smiling in mint rabbit hoodie and checkered pants set",
@@ -22,7 +29,9 @@ const TRENDING_ITEMS: TrendingItem[] = [
   {
     id: "knitwear",
     title: "COSY KNITWEAR",
+    titleAr: "تريكو وصوف دافئ",
     subtitle: "SHOP NOW",
+    subtitleAr: "تسوقي الآن",
     href: "/products?category=knitwear",
     image: "/images/next/jumpers-and-cardigans-shop-now.jpg",
     alt: "Two young girls in cozy floral knitwear and cardigans",
@@ -30,7 +39,9 @@ const TRENDING_ITEMS: TrendingItem[] = [
   {
     id: "denim",
     title: "DENIM & CASUALS",
+    titleAr: "جينز وملابس كاجوال",
     subtitle: "SHOP NOW",
+    subtitleAr: "تسوقي الآن",
     href: "/products?category=all",
     image: "/images/next/denim-shop-now.jpg",
     alt: "Young girl in striped collar knit and wide-leg denim",
@@ -38,13 +49,16 @@ const TRENDING_ITEMS: TrendingItem[] = [
 ];
 
 export default function TrendingNow() {
+  const { language } = useLanguage();
+  const isAr = language === 'ar';
+
   return (
-    <section className="w-full bg-[#F8F8F8] py-8 md:py-12 border-y border-neutral-200/60">
+    <section className="w-full bg-[#F8F8F8] dark:bg-[#1E1917] py-8 md:py-12 border-y border-neutral-200/60 dark:border-[#3D332E] transition-colors">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-4 md:mb-6" data-aos="fade-up">
-          <h2 className="text-xl md:text-2xl lg:text-[26px] font-black text-[#222222] tracking-tight uppercase font-sans">
-            TRENDING NOW
+          <h2 className="text-xl md:text-2xl lg:text-[26px] font-black text-[#222222] dark:text-[#FAF6F0] tracking-tight uppercase font-sans">
+            {isAr ? 'الأكثر رواجاً الآن' : 'TRENDING NOW'}
           </h2>
         </div>
 
@@ -54,7 +68,7 @@ export default function TrendingNow() {
             <Link
               key={item.id}
               href={item.href}
-              className="group relative block aspect-[4/5] w-full overflow-hidden bg-neutral-200"
+              className="group relative block aspect-[4/5] min-h-[340px] sm:min-h-[420px] w-full overflow-hidden bg-neutral-200 dark:bg-[#28211E] rounded-xl"
               data-aos="fade-up"
               data-aos-delay={index * 120}
             >
@@ -74,10 +88,10 @@ export default function TrendingNow() {
               {/* Editorial Captions Matching Next Direct */}
               <div className="absolute bottom-5 left-5 right-5 text-white z-10 pointer-events-none">
                 <h3 className="text-lg md:text-xl font-bold uppercase tracking-wide leading-tight drop-shadow-sm">
-                  {item.title}
+                  {isAr ? item.titleAr : item.title}
                 </h3>
                 <span className="inline-block mt-1.5 text-xs font-semibold tracking-wider uppercase underline underline-offset-4 text-white/95 group-hover:text-white transition-all">
-                  {item.subtitle}
+                  {isAr ? item.subtitleAr : item.subtitle}
                 </span>
               </div>
             </Link>
