@@ -1,27 +1,118 @@
-import AuthImage from '@images/Auth.png'
-import { Inter } from 'next/font/google'
-import Image from 'next/image'
-import LoginForm from './LoginForm'
-const inter = Inter({
-    weight: ['500'],
-    subsets: ['latin']
-})
+'use client';
 
-export default function login() {
-    return (
-        <div className='login my-15 text-text2'>
-            <div className='flex items-center justify-center gap-x-15'>
-                <div className="image-container hidden md:block md:w-2/3">
-                    <Image className=" object-contain" alt='login image' src={AuthImage} />
-                </div>
-                <div className='w-full md:w-1/3'>
-                    <div className='form-title mb-12'>
-                        <h1 className={`${inter.className} text-4xl`}>Login</h1>
-                        <p className='mt-4'>Enter your details below</p>
-                    </div>
-                    <LoginForm />
-                </div>
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import LoginForm from './LoginForm';
+import { useLanguage } from '@/context/LanguageContext';
+import { Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
+
+export default function LoginPage() {
+  const { language, isRtl } = useLanguage();
+  const isAr = language === 'ar';
+
+  return (
+    <div className='min-h-[90vh] py-10 sm:py-16 bg-[#FBF9F3] dark:bg-[#1F1917] flex items-center justify-center'>
+      <div className='container max-w-5xl'>
+        <div
+          dir={isRtl ? 'rtl' : 'ltr'}
+          className='bg-white dark:bg-[#28211E] rounded-3xl shadow-xl border border-[#EBDED6] dark:border-[#3D332E] overflow-hidden grid grid-cols-1 lg:grid-cols-12'
+        >
+          {/* Brand Visual Column */}
+          <div className='lg:col-span-5 relative hidden lg:flex flex-col justify-between p-10 bg-[#2B2320] text-white overflow-hidden'>
+            <div className='absolute inset-0 z-0 opacity-40 mix-blend-overlay'>
+              <Image
+                src='/images/next/dresses-shop-now.jpg'
+                alt='ROAROSA Girls Fashion'
+                fill
+                sizes='480px'
+                className='object-cover object-top'
+                priority
+              />
             </div>
+            <div className='absolute inset-0 bg-gradient-to-t from-[#2B2320] via-[#2B2320]/60 to-transparent z-0' />
+
+            <div className='relative z-10 space-y-3'>
+              <Link href='/' className='inline-block group'>
+                <h2 className='font-serif text-3xl font-bold tracking-[0.22em] text-[#FAF6F0] group-hover:text-[#C48D80] transition-colors'>
+                  ROAROSA
+                </h2>
+                <p className='text-[10px] tracking-[0.28em] uppercase text-[#E5C2AF]'>
+                  {isAr ? 'الرقة ليست ضعفاً' : 'Softness is not weakness'}
+                </p>
+              </Link>
+            </div>
+
+            <div className='relative z-10 space-y-4'>
+              <div className='inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-[#E5C2AF]'>
+                <Sparkles className='w-3.5 h-3.5' />
+                <span>{isAr ? 'عضوية حصرية لعميلاتنا' : 'Exclusive Girls Wardrobe'}</span>
+              </div>
+              <h3 className='font-serif text-2xl font-bold text-[#FAF6F0] leading-snug'>
+                {isAr
+                  ? 'أهلاً بكِ في عالم الأناقة الطفولية الفاخرة'
+                  : 'Delicate Silhouettes & Everyday Grace for Girls'}
+              </h3>
+              <p className='text-xs text-[#EBDED6]/80 leading-relaxed'>
+                {isAr
+                  ? 'سجّلي دخولكِ لمتابعة طلباتكِ، حفظ قطعكِ المفضلة، والاستمتاع بتجربة تسوق سريعة ومميزة.'
+                  : 'Sign in to review your shopping bag, track shipments, and receive curated new arrival edits.'}
+              </p>
+            </div>
+
+            <div className='relative z-10 pt-4 border-t border-white/15 text-[11px] text-[#EBDED6]/60 flex justify-between items-center'>
+              <span>© 2026 ROAROSA Brand</span>
+              <Link href='/' className='hover:text-white flex items-center gap-1 transition-colors'>
+                <span>{isAr ? 'العودة للمتجر' : 'Back to Store'}</span>
+                {isRtl ? <ArrowLeft className='w-3 h-3' /> : <ArrowRight className='w-3 h-3' />}
+              </Link>
+            </div>
+          </div>
+
+          {/* Form Content Column */}
+          <div className='lg:col-span-7 p-6 sm:p-12 flex flex-col justify-center'>
+            {/* Top Navigation Tabs */}
+            <div className='flex items-center justify-between pb-6 mb-8 border-b border-[#EBDED6] dark:border-[#3D332E]'>
+              <div className='flex items-center gap-3'>
+                <Link
+                  href='/login'
+                  className='font-serif text-lg sm:text-xl font-bold text-[#2B2320] dark:text-[#FAF6F0] border-b-2 border-[#C48D80] pb-1'
+                >
+                  {isAr ? 'تسجيل الدخول' : 'Sign In'}
+                </Link>
+                <span className='text-[#988172]'>•</span>
+                <Link
+                  href='/register'
+                  className='font-serif text-lg sm:text-xl font-medium text-[#988172] hover:text-[#2B2320] dark:hover:text-[#FAF6F0] pb-1 transition-colors'
+                >
+                  {isAr ? 'إنشاء حساب جديد' : 'Register'}
+                </Link>
+              </div>
+
+              <Link
+                href='/'
+                className='text-xs text-[#988172] hover:text-[#C48D80] transition-colors flex items-center gap-1'
+              >
+                <span>{isAr ? 'المتجر الرئيسي' : 'Storefront'}</span>
+              </Link>
+            </div>
+
+            <div className='space-y-2 mb-6'>
+              <h1 className='font-serif text-2xl sm:text-3xl font-bold text-[#2B2320] dark:text-[#FAF6F0]'>
+                {isAr ? 'أهلاً بعودتكِ' : 'Welcome Back'}
+              </h1>
+              <p className='text-xs sm:text-sm text-[#988172]'>
+                {isAr
+                  ? 'أدخلي بيانات حسابكِ للوصول إلى حقيبة التسوق والمفضلة'
+                  : 'Enter your credentials to access your account and orders'}
+              </p>
+            </div>
+
+            {/* Enhanced Login Form */}
+            <LoginForm />
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  );
 }

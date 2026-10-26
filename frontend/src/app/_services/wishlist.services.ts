@@ -14,7 +14,7 @@ export async function getAllWishlistItems(): Promise<IWishlistItem> {
         const data = await res.json();        
         return data;
     } catch (error) {
-        console.log(error);
-        throw error
+        console.warn('Wishlist fetch error:', error);
+        return { status: 'fail', count: 0, data: [] };
     }
 }
