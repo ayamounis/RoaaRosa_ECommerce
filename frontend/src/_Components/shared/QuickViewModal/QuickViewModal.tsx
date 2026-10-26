@@ -9,6 +9,7 @@ import { ProductCardProps } from '../ProductCard/ProductCard.types';
 import AddToCartBtn from '../AddToCartBtn/AddToCartBtn';
 import AddToWishlistBtn from '../AddToWishlistBtn/AddToWishlistBtn';
 import Stars from '../Stars/Stars';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface QuickViewModalProps {
   product: ProductCardProps | IProduct | null;
@@ -16,7 +17,21 @@ interface QuickViewModalProps {
   onClose: () => void;
 }
 
+const SWATCH_AR_NAMES: Record<string, string> = {
+  'Dusty Rose': 'وردي مغبر',
+  'Warm Nude': 'بيج دافئ',
+  'Taupe': 'رمادي داكن',
+  'Cream': 'كريمي',
+  'Sage Green': 'أخضر هادئ',
+  'Soft Ivory': 'عاجي ناعم',
+  'Blush Pink': 'وردي فاتح',
+  'Oatmeal': 'شوفان طبيعي',
+};
+
 export default function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps) {
+  const { language, isRtl } = useLanguage();
+  const isAr = language === 'ar';
+
   const [selectedSize, setSelectedSize] = useState('4-5 Yrs');
   const [selectedSwatchIdx, setSelectedSwatchIdx] = useState(0);
 
@@ -38,20 +53,28 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
       ? (product as { swatches: { name: string; hex: string }[] }).swatches
       : defaultSwatches;
   const activeSwatch = swatches[selectedSwatchIdx] || swatches[0];
+  const activeSwatchName = isAr
+    ? SWATCH_AR_NAMES[activeSwatch.name] || activeSwatch.name
+    : activeSwatch.name;
 
-  const sizes = ['2-3 Yrs', '4-5 Yrs', '6-7 Yrs', '8-9 Yrs', '10-12 Yrs'];
+  const sizes = isAr
+    ? ['2-3 سنوات', '4-5 سنوات', '6-7 سنوات', '8-9 سنوات', '10-12 سنة']
+    : ['2-3 Yrs', '4-5 Yrs', '6-7 Yrs', '8-9 Yrs', '10-12 Yrs'];
+
+  const currencyLabel = isAr ? 'ج.م' : 'EGP';
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200'>
       <div
+        dir={isRtl ? 'rtl' : 'ltr'}
         className='relative w-full max-w-3xl bg-white dark:bg-[#28211E] rounded-3xl overflow-hidden shadow-2xl border border-[#EBDED6] dark:border-[#3D332E] max-h-[90vh] flex flex-col md:flex-row'
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          aria-label='Close Quick View'
-          className='absolute top-4 right-4 z-20 size-8 rounded-full bg-white/90 dark:bg-[#1F1917]/90 text-[#2B2320] dark:text-white flex items-center justify-center shadow-md hover:bg-[#C48D80] hover:text-white transition-colors cursor-pointer'
+          aria-label={isAr ? 'إغلاق' : 'Close Quick View'}
+          className={`absolute top-4 ${isRtl ? 'left-4' : 'right-4'} z-20 size-8 rounded-full bg-white/90 dark:bg-[#1F1917]/90 text-[#2B2320] dark:text-white flex items-center justify-center shadow-md hover:bg-[#C48D80] hover:text-white transition-colors cursor-pointer`}
         >
           <X className='w-4 h-4' />
         </button>
@@ -66,8 +89,8 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             className='object-cover object-top'
           />
           {discount > 0 && (
-            <span className='absolute top-4 left-4 text-xs font-bold bg-[#C48D80] text-white py-1 px-3 rounded-full shadow-xs'>
-              Save {discount}%
+            <span className={`absolute top-4 ${isRtl ? 'right-4' : 'left-4'} text-xs font-bold bg-[#C48D80] text-white py-1 px-3 rounded-full shadow-xs`}>
+              {isAr ? `وفري ${discount}%` : `Save ${discount}%`}
             </span>
           )}
         </div>
@@ -77,7 +100,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
           <div>
             <div className='inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-[#C48D80] mb-1'>
               <Sparkles className='w-3 h-3' />
-              <span>ROAROSA Girls</span>
+              <span>{isAr ? 'رواروسا للبنات' : 'ROAROSA Girls'}</span>
             </div>
             <h3 className='font-serif text-xl sm:text-2xl font-bold text-[#2B2320] dark:text-[#FAF6F0]'>
               {product.title}
@@ -87,7 +110,9 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             {product.ratingsAverage !== undefined && (
               <div className='flex items-center gap-2 mt-2 text-xs'>
                 <Stars ratingsAverage={product.ratingsAverage} />
-                <span className='text-[#988172]'>({product.ratingsQuantity ?? 48} reviews)</span>
+                <span className='text-[#988172]'>
+                  ({product.ratingsQuantity ?? 48} {isAr ? 'تقييم' : 'reviews'})
+                </span>
               </div>
             )}
 
@@ -96,15 +121,15 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
               {product.priceAfterDiscount ? (
                 <>
                   <span className='font-serif text-2xl font-bold text-[#C48D80]'>
-                    {product.priceAfterDiscount} EGP
+                    {product.priceAfterDiscount} {currencyLabel}
                   </span>
                   <span className='text-sm line-through text-[#988172]'>
-                    {product.price} EGP
+                    {product.price} {currencyLabel}
                   </span>
                 </>
               ) : (
                 <span className='font-serif text-2xl font-bold text-[#2B2320] dark:text-[#FAF6F0]'>
-                  {product.price} EGP
+                  {product.price} {currencyLabel}
                 </span>
               )}
             </div>
@@ -112,14 +137,14 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             {/* Color Swatches */}
             <div className='space-y-1.5 py-1'>
               <div className='text-xs font-semibold text-[#2B2320] dark:text-[#FAF6F0]'>
-                Color: <span className='font-normal text-[#C48D80]'>{activeSwatch.name}</span>
+                {isAr ? 'اللون:' : 'Color:'} <span className='font-normal text-[#C48D80]'>{activeSwatchName}</span>
               </div>
               <div className='flex items-center gap-2'>
                 {swatches.map((swatch, idx) => (
                   <button
                     key={idx}
                     type='button'
-                    title={swatch.name}
+                    title={isAr ? SWATCH_AR_NAMES[swatch.name] || swatch.name : swatch.name}
                     onClick={() => setSelectedSwatchIdx(idx)}
                     style={{ backgroundColor: swatch.hex }}
                     className={`size-6 rounded-full border border-black/20 shadow-2xs relative transition-transform cursor-pointer ${
@@ -137,7 +162,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             {/* Size Selector */}
             <div className='space-y-1.5 py-2'>
               <div className='text-xs font-semibold text-[#2B2320] dark:text-[#FAF6F0]'>
-                Select Size:
+                {isAr ? 'اختاري المقاس / العمر:' : 'Select Size:'}
               </div>
               <div className='flex flex-wrap gap-2'>
                 {sizes.map((size) => (
@@ -172,14 +197,14 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             <div className='flex items-center justify-between text-[11px] text-[#988172] pt-1'>
               <div className='flex items-center gap-1.5'>
                 <Truck className='w-3.5 h-3.5 text-[#C48D80]' />
-                <span>Express Egypt Delivery</span>
+                <span>{isAr ? 'شحن فوري لجميع محافظات مصر' : 'Express Egypt Delivery'}</span>
               </div>
               <Link
                 href={`/productDetails/${productId}`}
                 onClick={onClose}
                 className='font-semibold text-[#C48D80] hover:underline'
               >
-                Full Product Details &rarr;
+                {isAr ? 'كامل تفاصيل المنتج ←' : 'Full Product Details →'}
               </Link>
             </div>
           </div>

@@ -1,4 +1,7 @@
+'use client';
+
 import React from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface FilterProductSortingProps {
   sortType: string | null;
@@ -9,18 +12,21 @@ export default function FilterProductSorting({
   sortType,
   setSortType,
 }: FilterProductSortingProps) {
+  const { language } = useLanguage();
+  const isAr = language === 'ar';
+
   const options = [
-    { label: "New In", val: "-createdAt" },
-    { label: "Price: Low to High", val: "price" },
-    { label: "Price: High to Low", val: "-price" },
-    { label: "Top Rated", val: "-ratingsAverage" },
+    { label: isAr ? "وصل حديثاً" : "New In", val: "-createdAt" },
+    { label: isAr ? "السعر: الأقل للأعلى" : "Price: Low to High", val: "price" },
+    { label: isAr ? "السعر: الأعلى للأقل" : "Price: High to Low", val: "-price" },
+    { label: isAr ? "الأعلى تقييماً" : "Top Rated", val: "-ratingsAverage" },
   ];
 
   return (
     <div className='space-y-2'>
       <div className='flex items-center justify-between'>
         <h3 className='text-sm font-semibold tracking-wider text-[#2B2320] dark:text-[#FAF6F0] uppercase'>
-          Sort By
+          {isAr ? "الترتيب حسب" : "Sort By"}
         </h3>
         {sortType != null && (
           <button
@@ -28,7 +34,7 @@ export default function FilterProductSorting({
             onClick={() => setSortType(null)}
             className='text-xs text-[#C48D80] hover:underline cursor-pointer'
           >
-            Clear Sort
+            {isAr ? "إلغاء الترتيب" : "Clear Sort"}
           </button>
         )}
       </div>
