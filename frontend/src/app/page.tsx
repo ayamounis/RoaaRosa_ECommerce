@@ -6,6 +6,7 @@ import ShopByAge from "@/_Components/home/ShopByAge/ShopByAge";
 import TrendingNow from "@/_Components/home/TrendingNow/TrendingNow";
 import TrendSpotlight from "@/_Components/home/TrendSpotlight/TrendSpotlight";
 import GirlsTrendingSlider from "@/_Components/home/GirlsTrendingSlider/GirlsTrendingSlider";
+import ContactSection from "@/_Components/contact/ContactSection";
 import TrustFeatures from "@/_Components/home/TrustFeatures/TrustFeatures";
 
 interface HomePageProps {
@@ -40,7 +41,12 @@ export default async function Home({ searchParams }: HomePageProps) {
       {/* 6. Trending in Girls / Best Sellers Carousel (Dynamic Category Sync) */}
       <GirlsTrendingSlider activeCategory={category} />
 
-      {/* 7. Value & Trust Guarantee Badges */}
+      {/* 7. Boutique Contact Us & Customer Care Section */}
+      <section className='w-full border-t border-[#EBDED6]/60 dark:border-[#3D332E]/60 bg-[#FAF7F2]/40 dark:bg-[#1F1917]/40 py-10 sm:py-16'>
+        <ContactSection embedded={true} />
+      </section>
+
+      {/* 8. Value & Trust Guarantee Badges */}
       <TrustFeatures />
     </div>
   );
