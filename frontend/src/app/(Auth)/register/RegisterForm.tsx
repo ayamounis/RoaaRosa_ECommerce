@@ -72,8 +72,17 @@ export default function RegisterForm() {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    setIsGoogleModalOpen(true);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signIn('google', { callbackUrl: '/' });
+    } catch {
+      setIsGoogleModalOpen(true);
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -82,7 +91,7 @@ export default function RegisterForm() {
       <Button
         type='button'
         onClick={handleGoogleSignUp}
-        disabled={isSubmitting}
+        disabled={isGoogleLoading || isSubmitting}
         variant='outline'
         className='w-full h-12 rounded-xl border border-[#EBDED6] dark:border-[#3D332E] hover:border-[#C48D80] bg-white dark:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-xs cursor-pointer'
       >
@@ -105,9 +114,21 @@ export default function RegisterForm() {
           />
         </svg>
         <span>
-          {isAr ? 'التسجيل السريع باستخدام Google (Gmail)' : 'Sign up with Google (Gmail)'}
+          {isGoogleLoading
+            ? (isAr ? 'جاري الاتصال بـ Google...' : 'Connecting to Google...')
+            : (isAr ? 'التسجيل السريع باستخدام Google (Gmail)' : 'Sign up with Google (Gmail)')}
         </span>
       </Button>
+
+      <div className='flex justify-center -mt-3'>
+        <button
+          type='button'
+          onClick={() => setIsGoogleModalOpen(true)}
+          className='text-[11px] text-[#988172] hover:text-[#C48D80] transition-colors underline underline-offset-4 cursor-pointer'
+        >
+          {isAr ? 'أو إدخال بيانات Google ورقم الموبايل يدوياً' : 'Or enter Google details & phone manually'}
+        </button>
+      </div>
 
       <GoogleAuthModal
         isOpen={isGoogleModalOpen}

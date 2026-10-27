@@ -68,8 +68,17 @@ export default function LoginForm() {
         }
     }
 
-    const handleGoogleSignIn = () => {
-        setIsGoogleModalOpen(true)
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+
+    const handleGoogleSignIn = async () => {
+        setIsGoogleLoading(true)
+        try {
+            await signIn('google', { callbackUrl: '/' })
+        } catch {
+            setIsGoogleModalOpen(true)
+        } finally {
+            setIsGoogleLoading(false)
+        }
     }
 
     const fillTestAccount = (role: 'admin' | 'customer') => {
@@ -89,7 +98,7 @@ export default function LoginForm() {
             <Button
                 type='button'
                 onClick={handleGoogleSignIn}
-                disabled={isSubmitting}
+                disabled={isGoogleLoading || isSubmitting}
                 variant='outline'
                 className='w-full h-12 rounded-xl border border-[#EBDED6] dark:border-[#3D332E] hover:border-[#C48D80] bg-white dark:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-xs cursor-pointer'
             >
@@ -113,9 +122,21 @@ export default function LoginForm() {
                     />
                 </svg>
                 <span>
-                    {isAr ? 'المتابعة باستخدام حساب Google (Gmail)' : 'Continue with Google (Gmail)'}
+                    {isGoogleLoading
+                        ? (isAr ? 'جاري الاتصال بـ Google...' : 'Connecting to Google...')
+                        : (isAr ? 'المتابعة باستخدام حساب Google (Gmail)' : 'Continue with Google (Gmail)')}
                 </span>
             </Button>
+
+            <div className='flex justify-center -mt-3'>
+                <button
+                    type='button'
+                    onClick={() => setIsGoogleModalOpen(true)}
+                    className='text-[11px] text-[#988172] hover:text-[#C48D80] transition-colors underline underline-offset-4 cursor-pointer'
+                >
+                    {isAr ? 'أو كتابة حساب Gmail ورقم الهاتف يدوياً' : 'Or enter Gmail & phone manually'}
+                </button>
+            </div>
 
             <GoogleAuthModal
                 isOpen={isGoogleModalOpen}
