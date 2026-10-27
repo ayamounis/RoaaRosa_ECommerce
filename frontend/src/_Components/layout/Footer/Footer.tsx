@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useLanguage } from '@/context/LanguageContext';
 
+
 export default function Footer() {
-  const { language, isRtl } = useLanguage();
+  const { language } = useLanguage();
   const isAr = language === 'ar';
 
   const [email, setEmail] = useState('');
@@ -194,6 +195,11 @@ export default function Footer() {
               <li>
                 <Link href='/profile' className='hover:text-white transition-colors'>
                   {isAr ? 'حسابي وإعدادات الملف' : 'My Account & Settings'}
+                </Link>
+              </li>
+              <li>
+                <Link href='/contact' className='hover:text-white transition-colors'>
+                  {isAr ? 'تواصل معنا (خدمة العملاء)' : 'Contact Us (Customer Care)'}
                 </Link>
               </li>
             </ul>

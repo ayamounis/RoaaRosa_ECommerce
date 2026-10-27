@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { IOrder } from "@/app/_interfaces/order";
 import { ISession } from "@/app/_interfaces/session";
 import { getAllUserOrders } from "@/app/_services/order.services";
-import AllOrdersClientWrapper from "./page.client";
+import AllOrdersClientWrapper from "./AllOrdersClientWrapper";
 import OrdersClientView from "./OrdersClientView";
 
 export default async function Allorders() {

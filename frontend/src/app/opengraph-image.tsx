@@ -1,99 +1,153 @@
+export const dynamic = 'force-dynamic';
 import { ImageResponse } from 'next/og';
+import { siteConfig } from '@/config/seo.config';
 
-export const runtime = 'edge';
-export const alt = 'Exclusive - Premium Online Shopping Store';
+export const alt = `${siteConfig.name} - ${siteConfig.slogan}`;
 export const size = {
-    width: 1200,
-    height: 630,
+  width: 1200,
+  height: 630,
 };
 
 export const contentType = 'image/png';
 
 export default async function Image() {
-    return new ImageResponse(
-        (
-            <div
-                style={{
-                    height: '100%',
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#0F172A',
-                    backgroundImage: 'radial-gradient(circle at 25px 25px, rgba(219, 68, 68, 0.15) 2%, transparent 0%)',
-                    backgroundSize: '50px 50px',
-                    color: 'white',
-                    fontFamily: 'sans-serif',
-                    padding: '60px',
-                }}
-            >
-                {/* Brand Badge */}
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#DB4444',
-                        color: 'white',
-                        padding: '10px 24px',
-                        borderRadius: '30px',
-                        fontSize: '20px',
-                        fontWeight: 'bold',
-                        letterSpacing: '2px',
-                        marginBottom: '30px',
-                        textTransform: 'uppercase',
-                    }}
-                >
-                    EXCLUSIVE STORE
-                </div>
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#1E1715',
+          backgroundImage:
+            'radial-gradient(circle at 50% 25%, rgba(196, 141, 128, 0.22) 0%, transparent 60%), radial-gradient(circle at 85% 85%, rgba(196, 141, 128, 0.12) 0%, transparent 50%)',
+          color: '#FAF6F0',
+          fontFamily: 'serif',
+          padding: '60px 80px',
+          position: 'relative',
+        }}
+      >
+        {/* Subtle Decorative Border Frame */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 28,
+            left: 28,
+            right: 28,
+            bottom: 28,
+            border: '1px solid rgba(196, 141, 128, 0.35)',
+            borderRadius: 16,
+            display: 'flex',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 36,
+            left: 36,
+            right: 36,
+            bottom: 36,
+            border: '1px solid rgba(196, 141, 128, 0.15)',
+            borderRadius: 12,
+            display: 'flex',
+          }}
+        />
 
-                {/* Main Heading */}
-                <div
-                    style={{
-                        fontSize: '64px',
-                        fontWeight: '900',
-                        textAlign: 'center',
-                        marginBottom: '20px',
-                        background: 'linear-gradient(to right, #FFFFFF, #94A3B8)',
-                        backgroundClip: 'text',
-                        color: 'transparent',
-                        lineHeight: 1.2,
-                    }}
-                >
-                    Premium Online Shopping
-                </div>
+        {/* Brand Badge */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(196, 141, 128, 0.18)',
+            border: '1px solid rgba(196, 141, 128, 0.5)',
+            color: '#C48D80',
+            padding: '8px 24px',
+            borderRadius: '9999px',
+            fontSize: '16px',
+            letterSpacing: '5px',
+            marginBottom: '28px',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+          }}
+        >
+          ROAROSA • LUXURY GIRLS&apos; FASHION
+        </div>
 
-                {/* Subtitle */}
-                <div
-                    style={{
-                        fontSize: '28px',
-                        color: '#94A3B8',
-                        textAlign: 'center',
-                        maxWidth: '800px',
-                        lineHeight: 1.4,
-                    }}
-                >
-                    Discover exclusive deals on Electronics, Fashion, Home & Accessories with fast global shipping.
-                </div>
+        {/* Main Monogram & Brand Name */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '76px',
+              fontWeight: '700',
+              textAlign: 'center',
+              letterSpacing: '8px',
+              color: '#FAF6F0',
+              lineHeight: 1.1,
+            }}
+          >
+            ROAROSA
+          </div>
+          <div
+            style={{
+              fontSize: '26px',
+              fontStyle: 'italic',
+              color: '#C48D80',
+              marginTop: '10px',
+              letterSpacing: '2px',
+            }}
+          >
+            Softness is not weakness
+          </div>
+        </div>
 
-                {/* Footer Tag */}
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginTop: '50px',
-                        fontSize: '20px',
-                        color: '#DB4444',
-                        fontWeight: '600',
-                    }}
-                >
-                    ecommerce-exclusive.vercel.app
-                </div>
-            </div>
-        ),
-        {
-            ...size,
-        }
-    );
+        {/* Subtitle / Description */}
+        <div
+          style={{
+            fontSize: '20px',
+            color: '#D1C7BD',
+            textAlign: 'center',
+            maxWidth: '820px',
+            lineHeight: 1.5,
+            marginTop: '12px',
+          }}
+        >
+          Curated elegance, timeless fabrics, and delicate everyday grace for Baby (0-2Y), Younger (3-6Y), and Older Girls (7-14Y).
+        </div>
+
+        {/* Footer Features */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '32px',
+            marginTop: '44px',
+            fontSize: '15px',
+            color: '#A89B93',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+          }}
+        >
+          <div style={{ display: 'flex' }}>Premium Fabrics</div>
+          <div style={{ display: 'flex', color: '#C48D80' }}>•</div>
+          <div style={{ display: 'flex' }}>Express Delivery Egypt</div>
+          <div style={{ display: 'flex', color: '#C48D80' }}>•</div>
+          <div style={{ display: 'flex' }}>Cash & ValU Accepted</div>
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+    }
+  );
 }

@@ -28,7 +28,7 @@ export default function GirlsTrendingClient({
   initialProducts,
   activeCategory = 'all',
 }: GirlsTrendingClientProps) {
-  const { language, isRtl } = useLanguage();
+  const { language } = useLanguage();
   const isAr = language === 'ar';
 
   const FILTER_PILLS = [

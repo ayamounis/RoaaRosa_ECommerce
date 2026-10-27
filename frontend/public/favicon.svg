@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="roseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C48D80"/>
+      <stop offset="50%" stop-color="#A56E62"/>
+      <stop offset="100%" stop-color="#8A5145"/>
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2E6DC"/>
+      <stop offset="100%" stop-color="#D9BCA6"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .bg-circle { fill: #FAF6F0; }
+    @media (prefers-color-scheme: dark) {
+      .bg-circle { fill: #1E1715; }
+    }
+  </style>
+
+  <!-- Circular background with subtle luxury ring -->
+  <circle cx="256" cy="256" r="248" class="bg-circle" />
+  <circle cx="256" cy="256" r="236" fill="none" stroke="url(#goldGradient)" stroke-width="4" stroke-dasharray="6 4" opacity="0.75"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="url(#goldGradient)" stroke-width="1.5" opacity="0.45"/>
+
+  <!-- Floral crown -->
+  <g fill="url(#roseGradient)">
+    <path d="M256 95 C263 115 280 127 292 129 C278 137 267 151 256 168 C245 151 234 137 220 129 C232 127 249 115 256 95 Z" />
+    <circle cx="256" cy="78" r="5" />
+  </g>
+
+  <!-- Luxury Monogram 'R' -->
+  <text 
+    x="256" 
+    y="336" 
+    text-anchor="middle" 
+    font-family="'Playfair Display', 'Bodoni MT', 'Didot', Georgia, serif" 
+    font-size="240" 
+    font-weight="700" 
+    fill="url(#roseGradient)"
+  >
+    R
+  </text>
+
+  <!-- Brand Subtext -->
+  <text 
+    x="256" 
+    y="394" 
+    text-anchor="middle" 
+    font-family="'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" 
+    font-size="28" 
+    font-weight="600" 
+    letter-spacing="9"
+    fill="url(#roseGradient)"
+  >
+    ROAROSA
+  </text>
+</svg>

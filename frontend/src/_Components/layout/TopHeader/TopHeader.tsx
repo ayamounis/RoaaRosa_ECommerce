@@ -42,7 +42,7 @@ export default function TopHeader() {
             <span>{isAr ? 'ج.م' : 'EGP'}</span>
           </span>
           <Link
-            href='/products'
+            href='/contact'
             className='hidden sm:flex items-center gap-1 hover:text-white transition-colors'
           >
             <HelpCircle className='w-3 h-3' />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Truck, ShieldCheck, RefreshCw, CreditCard, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, CreditCard, MapPin, CheckCircle, ChevronRight, ChevronLeft, ChevronDown, X } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const EGYPT_GOVERNORATES = [
@@ -103,17 +103,32 @@ export default function TrustFeatures() {
                 <label className='block text-[11px] font-semibold text-[#988172] mb-1.5 uppercase'>
                   {isAr ? 'اختاري المحافظة:' : 'Select Governorate:'}
                 </label>
-                <select
-                  value={selectedGovIdx}
-                  onChange={(e) => setSelectedGovIdx(Number(e.target.value))}
-                  className='w-full px-4 py-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1F1917] border border-[#EBDED6] dark:border-[#3D332E] text-xs font-semibold text-[#2B2320] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#C48D80]'
-                >
-                  {EGYPT_GOVERNORATES.map((gov, idx) => (
-                    <option key={gov.name} value={idx}>
-                      {isAr ? gov.nameAr : gov.name}
-                    </option>
-                  ))}
-                </select>
+                <div className='relative'>
+                  <select
+                    value={selectedGovIdx}
+                    onChange={(e) => setSelectedGovIdx(Number(e.target.value))}
+                    className={`w-full appearance-none rounded-xl bg-[#FAF7F2] dark:bg-[#1F1917] border border-[#EBDED6] dark:border-[#3D332E] text-xs font-semibold text-[#2B2320] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#C48D80] cursor-pointer py-3 transition-colors ${
+                      isRtl ? 'pl-10 pr-4 text-right' : 'pr-10 pl-4 text-left'
+                    }`}
+                  >
+                    {EGYPT_GOVERNORATES.map((gov, idx) => (
+                      <option
+                        key={gov.name}
+                        value={idx}
+                        className='bg-white dark:bg-[#1F1917] text-[#2B2320] dark:text-white py-1.5'
+                      >
+                        {isAr ? gov.nameAr : gov.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div
+                    className={`pointer-events-none absolute top-1/2 -translate-y-1/2 flex items-center text-[#988172] dark:text-[#C48D80] transition-colors ${
+                      isRtl ? 'left-3.5' : 'right-3.5'
+                    }`}
+                  >
+                    <ChevronDown className='w-4 h-4' />
+                  </div>
+                </div>
               </div>
 
               <div className='p-3.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1F1917] border border-[#EBDED6] dark:border-[#3D332E] sm:min-w-[240px]'>

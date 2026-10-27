@@ -40,6 +40,43 @@ import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 export class UsersController {
   constructor(@Inject(UsersService) private readonly usersService: UsersService) {}
 
+  // ─── Authenticated user routes ────────────────────────────────────────────
+
+  @Get('getMe')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get profile details', description: 'Fetches the current user details including saved shipping addresses.' })
+  @ApiResponse({ status: 200, description: 'User profile retrieved successfully.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized: authentication token required.' })
+  @ApiResponse({ status: 404, description: 'User record not found.' })
+  getMe(@CurrentUser('id') userId: string) {
+    return this.usersService.getMe(userId);
+  }
+
+  @Put('updateMe')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update profile details', description: 'Updates customer name, email address, or mobile number.' })
+  @ApiBody({ type: UpdateMeDto })
+  @ApiResponse({ status: 200, description: 'User profile updated successfully.' })
+  @ApiResponse({ status: 400, description: 'Email address already in use by another account.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateMeDto) {
+    return this.usersService.updateMe(userId, dto);
+  }
+
+  @Put('changeMyPassword')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change password', description: 'Validates old password and sets new password, issuing fresh JWT.' })
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiResponse({ status: 200, description: 'Password changed successfully, new token returned.' })
+  @ApiResponse({ status: 400, description: 'Current password incorrect or password confirmation mismatch.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  changeMyPassword(
+    @CurrentUser('id') userId: string,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.usersService.changeMyPassword(userId, dto);
+  }
+
   // ─── Admin-only routes ────────────────────────────────────────────────────
 
   @Get()
@@ -111,42 +148,5 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found.' })
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
-  }
-
-  // ─── Authenticated user routes ────────────────────────────────────────────
-
-  @Get('getMe')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get profile details', description: 'Fetches the current user details including saved shipping addresses.' })
-  @ApiResponse({ status: 200, description: 'User profile retrieved successfully.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized: authentication token required.' })
-  @ApiResponse({ status: 404, description: 'User record not found.' })
-  getMe(@CurrentUser('id') userId: string) {
-    return this.usersService.getMe(userId);
-  }
-
-  @Put('updateMe')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update profile details', description: 'Updates customer name, email address, or mobile number.' })
-  @ApiBody({ type: UpdateMeDto })
-  @ApiResponse({ status: 200, description: 'User profile updated successfully.' })
-  @ApiResponse({ status: 400, description: 'Email address already in use by another account.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateMeDto) {
-    return this.usersService.updateMe(userId, dto);
-  }
-
-  @Put('changeMyPassword')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Change password', description: 'Validates old password and sets new password, issuing fresh JWT.' })
-  @ApiBody({ type: ChangePasswordDto })
-  @ApiResponse({ status: 200, description: 'Password changed successfully, new token returned.' })
-  @ApiResponse({ status: 400, description: 'Current password incorrect or password confirmation mismatch.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  changeMyPassword(
-    @CurrentUser('id') userId: string,
-    @Body() dto: ChangePasswordDto,
-  ) {
-    return this.usersService.changeMyPassword(userId, dto);
   }
 }

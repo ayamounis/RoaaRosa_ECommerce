@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import ProductList from "@/_Components/shared/ProductList/ProductList";
 import { GetSpecificCategory } from "@/app/_services/Categories.services";
 import { getAllProducts, IProductParams } from "@/app/_services/products.services";

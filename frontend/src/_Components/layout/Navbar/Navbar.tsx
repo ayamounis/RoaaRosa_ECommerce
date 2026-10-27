@@ -1,12 +1,12 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut, useSession } from 'next-auth/react';
 import { toast } from 'sonner';
-import { ChevronDown, Heart, ShoppingBag, User, Menu, Sparkles, LayoutDashboard } from 'lucide-react';
+import { ChevronDown, Heart, ShoppingBag, User, Menu, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 import SearchInput from '@/_Components/shared/SearchInput/SearchInput';
@@ -30,23 +30,7 @@ import { updateCartCountAsync } from '@/redux/slices/CartSlice';
 import { updateWishlistCountAsync } from '@/redux/slices/WishlistSlice';
 import type { AppDispatch, RootState } from '@/redux/store';
 
-const DEPARTMENT_LINKS = [
-  { slug: 'all', title: 'All Girls', titleAr: 'كل تشكيلات البنات', href: '/?category=all' },
-  { slug: 'new-in', title: 'New In', titleAr: 'وصل حديثاً', href: '/?category=new-in', highlight: true },
-  { slug: 'baby', title: 'Baby (0-2 Yrs)', titleAr: 'الرضع (0-2 سنة)', href: '/?category=baby' },
-  { slug: 'younger', title: 'Younger Girls (3-7 Yrs)', titleAr: 'الصغيرات (3-7 سنوات)', href: '/?category=younger' },
-  { slug: 'older', title: 'Older Girls (8-16 Yrs)', titleAr: 'الكبار (8-16 سنة)', href: '/?category=older' },
-  { slug: 'dresses', title: 'Dresses', titleAr: 'فساتين', href: '/?category=dresses' },
-  { slug: 'tops', title: 'Tops & T-Shirts', titleAr: 'بلوزات وتيشيرتات', href: '/?category=tops' },
-  { slug: 'knitwear', title: 'Knitwear', titleAr: 'ملابس صوف وتريكو', href: '/?category=knitwear' },
-  { slug: 'coats', title: 'Coats & Jackets', titleAr: 'معاطف وجواكت', href: '/?category=coats' },
-  { slug: 'sets', title: 'Sets & Outfits', titleAr: 'أطقم وتنسيقات', href: '/?category=sets' },
-  { slug: 'nightwear', title: 'Nightwear', titleAr: 'ملابس نوم', href: '/?category=nightwear' },
-  { slug: 'occasions', title: 'Occasions', titleAr: 'مناسبات وسهرات', href: '/?category=occasions' },
-  { slug: 'sale', title: 'Sale', titleAr: 'تخفيضات', href: '/?category=sale', isSale: true },
-];
-
-function NavbarInner({ currentCategory }: { currentCategory: string }) {
+function NavbarInner() {
   const { data: isAuth } = useSession();
   const isAdmin = Boolean(
     isAuth?.user &&
@@ -148,81 +132,63 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
                     <SearchInput />
                   </div>
 
-                  {/* Age Categories */}
-                  <div>
-                    <p className='text-xs font-semibold tracking-wider text-[#988172] uppercase mb-2'>
-                      Shop By Age
-                    </p>
-                    <div className='grid grid-cols-2 gap-2'>
-                      <Link
-                        href='/?category=baby'
-                        onClick={handleCloseMenu}
-                        className={`p-2.5 rounded-lg border text-xs font-medium text-center transition-colors ${
-                          pathname === '/' && currentCategory === 'baby'
-                            ? 'bg-[#C48D80] text-white border-[#C48D80]'
-                            : 'bg-white dark:bg-[#28211E] border-[#EBDED6] dark:border-[#3D332E]'
-                        }`}
-                      >
-                        Baby (0-2 Yrs)
-                      </Link>
-                      <Link
-                        href='/?category=younger'
-                        onClick={handleCloseMenu}
-                        className={`p-2.5 rounded-lg border text-xs font-medium text-center transition-colors ${
-                          pathname === '/' && currentCategory === 'younger'
-                            ? 'bg-[#C48D80] text-white border-[#C48D80]'
-                            : 'bg-white dark:bg-[#28211E] border-[#EBDED6] dark:border-[#3D332E]'
-                        }`}
-                      >
-                        Younger (3-7 Yrs)
-                      </Link>
-                      <Link
-                        href='/?category=older'
-                        onClick={handleCloseMenu}
-                        className={`p-2.5 rounded-lg border text-xs font-medium text-center transition-colors ${
-                          pathname === '/' && currentCategory === 'older'
-                            ? 'bg-[#C48D80] text-white border-[#C48D80]'
-                            : 'bg-white dark:bg-[#28211E] border-[#EBDED6] dark:border-[#3D332E]'
-                        }`}
-                      >
-                        Older (8-16 Yrs)
-                      </Link>
-                      <Link
-                        href='/products'
-                        onClick={handleCloseMenu}
-                        className='p-2.5 rounded-lg bg-white dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] text-xs font-medium text-center'
-                      >
-                        All Products
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Department Links */}
-                  <div>
-                    <p className='text-xs font-semibold tracking-wider text-[#988172] uppercase mb-2'>
-                      Departments
-                    </p>
-                    <div className='space-y-1.5'>
-                      {DEPARTMENT_LINKS.map((link, idx) => {
-                        const isCurrent = pathname === '/' && link.slug === currentCategory;
-                        return (
-                          <Link
-                            key={idx}
-                            href={link.href}
-                            onClick={handleCloseMenu}
-                            className={`block px-3 py-2 rounded text-sm transition-colors ${
-                              isCurrent
-                                ? 'bg-[#C48D80] text-white font-semibold'
-                                : link.isSale
-                                ? 'text-[#C48D80] font-semibold'
-                                : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
-                            }`}
-                          >
-                            {isAr ? link.titleAr : link.title}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                  {/* Navigation Links */}
+                  <div className='space-y-1.5'>
+                    <Link
+                      href='/'
+                      onClick={handleCloseMenu}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === '/'
+                          ? 'bg-[#C48D80] text-white font-semibold'
+                          : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
+                      }`}
+                    >
+                      {isAr ? 'الرئيسية' : 'Home'}
+                    </Link>
+                    <Link
+                      href='/products'
+                      onClick={handleCloseMenu}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === '/products'
+                          ? 'bg-[#C48D80] text-white font-semibold'
+                          : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
+                      }`}
+                    >
+                      {isAr ? 'جميع المنتجات' : 'All Products'}
+                    </Link>
+                    <Link
+                      href='/wishlist'
+                      onClick={handleCloseMenu}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === '/wishlist'
+                          ? 'bg-[#C48D80] text-white font-semibold'
+                          : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
+                      }`}
+                    >
+                      {isAr ? 'المفضلة' : 'Favourites'}
+                    </Link>
+                    <Link
+                      href='/cart'
+                      onClick={handleCloseMenu}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === '/cart'
+                          ? 'bg-[#C48D80] text-white font-semibold'
+                          : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
+                      }`}
+                    >
+                      {isAr ? 'حقيبة التسوق' : 'Shopping Bag'}
+                    </Link>
+                                        <Link
+                      href='/contact'
+                      onClick={handleCloseMenu}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === '/contact'
+                          ? 'bg-[#C48D80] text-white font-semibold'
+                          : 'text-[#2B2320] dark:text-[#FAF6F0] hover:bg-[#FAF7F2] dark:hover:bg-[#28211E]'
+                      }`}
+                    >
+                      {isAr ? 'تواصل معنا' : 'Contact Us'}
+                    </Link>
                   </div>
                 </div>
 
@@ -420,52 +386,10 @@ function NavbarInner({ currentCategory }: { currentCategory: string }) {
         </div>
       </div>
 
-      {/* Next Direct Secondary Department Subnav Bar */}
-      <div className='border-t border-[#EBDED6] dark:border-[#3D332E] bg-[#F5EFEB]/90 dark:bg-[#28211E]/90 backdrop-blur-xs w-full'>
-        <div className='container px-4'>
-          <nav className='flex items-center justify-start overflow-x-auto no-scrollbar py-2.5 gap-2 sm:gap-3 text-xs font-medium whitespace-nowrap scroll-smooth'>
-            {DEPARTMENT_LINKS.map((item, idx) => {
-              const isCurrent = pathname === '/' && item.slug === currentCategory;
-              return (
-                <Link
-                  key={idx}
-                  href={item.href}
-                  className={`relative py-1.5 px-3 rounded-full transition-all flex items-center gap-1 shrink-0 ${
-                    isCurrent
-                      ? 'bg-[#C48D80] text-white font-semibold shadow-xs'
-                      : item.isSale
-                      ? 'text-[#C48D80] font-bold hover:text-[#B27B6E] hover:bg-[#C48D80]/10'
-                      : item.highlight
-                      ? 'text-[#2B2320] dark:text-[#FAF6F0] font-semibold hover:text-[#C48D80] hover:bg-white/60 dark:hover:bg-[#3D332E]'
-                      : 'text-[#5A4F4A] dark:text-[#D1C5BD] hover:text-[#2B2320] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#3D332E]/50'
-                  }`}
-                >
-                  {item.highlight && (
-                    <Sparkles
-                      className={`w-3 h-3 ${isCurrent ? 'text-white' : 'text-[#C48D80]'}`}
-                    />
-                  )}
-                  <span>{isAr ? item.titleAr : item.title}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-    </header>
+      </header>
   );
-}
-
-function NavbarWithParams() {
-  const searchParams = useSearchParams();
-  const currentCategory = searchParams.get('category') || 'all';
-  return <NavbarInner currentCategory={currentCategory} />;
 }
 
 export default function Navbar() {
-  return (
-    <Suspense fallback={<NavbarInner currentCategory='all' />}>
-      <NavbarWithParams />
-    </Suspense>
-  );
+  return <NavbarInner />;
 }

@@ -11,7 +11,9 @@ import BottomFilter from "@/_Components/shared/BottomFilter/BottomFilter";
 import { ThemeProvider } from "@/_Components/theme-provider";
 import AOSInit from "@/_Components/shared/AOSInit/AOSInit";
 import ScrollToTop from "@/_Components/shared/ScrollToTop/ScrollToTop";
+import WebMcpBridge from "@/_Components/shared/WebMcpBridge";
 import CustomerChatbot from "@/_Components/chatbot/CustomerChatbot";
+import { constructMetadata, generateStoreJsonLd } from "@/config/seo.config";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -27,80 +29,14 @@ const playfair = Playfair_Display({
   display: 'swap'
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://roarosa-girls.vercel.app";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
-    template: "%s | ROAROSA",
-  },
-  description: "Discover ROAROSA — luxury girls' fashion inspired by softness and timeless elegance. Explore baby, younger, and older girls' dresses, coats, knitwear, and occasionwear.",
-  keywords: [
-    "ROAROSA",
-    "Girls Clothing",
-    "Girls Fashion",
-    "Baby Girls Clothing",
-    "Younger Girls Fashion",
-    "Older Girls Clothing",
-    "Occasionwear Girls",
-    "Next Direct Girls",
-    "Egypt Girls Clothes"
-  ],
-  authors: [{ name: "ROAROSA Design Team", url: siteUrl }],
-  creator: "ROAROSA",
-  publisher: "ROAROSA",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteUrl,
-    title: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
-    description: "Softness is not weakness. Shop premium girls' collections with express delivery across Egypt.",
-    siteName: "ROAROSA",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ROAROSA | Luxury Girls' Clothing & Everyday Grace",
-    description: "Softness is not weakness. Shop premium girls' collections with express delivery across Egypt.",
-    creator: "@RoarosaBrand",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-};
+export const metadata: Metadata = constructMetadata();
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "OnlineStore",
-    "name": "ROAROSA",
-    "slogan": "Softness is not weakness",
-    "url": siteUrl,
-    "logo": `${siteUrl}/logo.png`,
-    "image": `${siteUrl}/logo.png`,
-    "description": "Discover ROAROSA luxury girls' fashion with timeless fabrics and delicate elegance.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": `${siteUrl}/products?search={search_term_string}`
-      },
-      "query-input": "required name=search_term_string"
-    }
-  };
+  const jsonLd = generateStoreJsonLd();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -129,6 +65,7 @@ export default function RootLayout({
             <Footer />
             <ScrollToTop />
             <CustomerChatbot />
+            <WebMcpBridge />
             <Suspense fallback={null}>
               <BottomFilter />
             </Suspense>
