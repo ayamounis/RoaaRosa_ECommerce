@@ -41,9 +41,9 @@ export class OrdersController {
   @ApiBearerAuth('bearer')
   @ApiSecurity('token')
   @ApiOperation({
-    summary: 'Create Stripe checkout session for online payment',
+    summary: 'Create Kashier checkout session for online payment',
     description:
-      'Initiates a Stripe hosted checkout session for the items in the user cart. Returns session ID and redirection URL.',
+      'Initiates a Kashier payment session for the items in the user cart in test/production mode. Returns session ID and checkout details.',
   })
   @ApiParam({
     name: 'cartId',

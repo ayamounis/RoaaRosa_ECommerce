@@ -300,7 +300,7 @@ export class OrdersService {
         },
         payment: {
           create: {
-            paymentProvider: 'STRIPE',
+            paymentProvider: 'KASHIER',
             stripeSessionId: sessionId,
             amount: totalOrderPrice,
             currency: 'EGP',
@@ -316,8 +316,13 @@ export class OrdersService {
       success_url: successUrl,
       cancel_url: cancelUrl,
       orderId: order.id,
+      orderNumber: order.orderNumber,
+      amount: totalOrderPrice,
       amount_total: Math.round(totalOrderPrice * 100),
       currency: 'egp',
+      paymentProvider: 'KASHIER',
+      merchantId: process.env.KASHIER_MERCHANT_ID || 'MID-TEST-ROAAROSA',
+      isTestMode: true,
     };
 
     return {

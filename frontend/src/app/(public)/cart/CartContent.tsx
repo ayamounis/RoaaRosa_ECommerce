@@ -139,6 +139,38 @@ export default function CartContent({
   return (
     <div dir={isRtl ? 'rtl' : 'ltr'} className='py-8 sm:py-12 bg-[#FBF9F3] dark:bg-[#1F1917] min-h-screen'>
       <div className='container max-w-7xl'>
+        {/* 3-Step Checkout Stepper */}
+        <div className="mb-6 p-4 rounded-3xl bg-white dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] shadow-2xs">
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            {/* Step 1: Cart (Active) */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 rounded-2xl bg-[#FAF7F2] dark:bg-[#1F1917] border border-[#EBDED6] dark:border-[#3D332E] text-[#2B2320] dark:text-[#FAF6F0]">
+              <span className="w-6 h-6 rounded-full bg-[#C48D80] text-white flex items-center justify-center text-[11px] font-bold">
+                ١
+              </span>
+              <span className="font-bold">{isAr ? '١. حقيبة التسوق' : '1. Shopping Bag'}</span>
+            </div>
+
+            {/* Step 2: Checkout */}
+            <Link
+              href="/cart/payment"
+              className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 rounded-2xl text-[#988172] hover:text-[#C48D80] transition-colors"
+            >
+              <span className="w-6 h-6 rounded-full bg-[#FAF7F2] dark:bg-[#1F1917] text-[#988172] flex items-center justify-center text-[11px] font-bold border border-[#EBDED6] dark:border-[#3D332E]">
+                ٢
+              </span>
+              <span className="font-medium">{isAr ? '٢. تفاصيل الشحن والطلب' : '2. Shipping & Order'}</span>
+            </Link>
+
+            {/* Step 3: Kashier Payment */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 rounded-2xl text-[#988172]">
+              <span className="w-6 h-6 rounded-full bg-[#FAF7F2] dark:bg-[#1F1917] text-[#988172] flex items-center justify-center text-[11px] font-bold border border-[#EBDED6] dark:border-[#3D332E]">
+                ٣
+              </span>
+              <span className="font-medium">{isAr ? '٣. بوابة الدفع كاشير' : '3. Kashier Payment'}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Header Breadcrumb */}
         <div className='mb-8 pb-4 border-b border-[#EBDED6] dark:border-[#3D332E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
           <div>
@@ -360,7 +392,7 @@ export default function CartContent({
               className='w-full h-12 rounded-full bg-[#C48D80] hover:bg-[#B27B6E] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer'
             >
               <Link href='/cart/payment'>
-                <span>{isAr ? 'متابعة الدفع الآمن' : 'Proceed to Checkout'}</span>
+                <span>{isAr ? 'متابعة الشحن وإتمام الطلب (Checkout)' : 'Proceed to Checkout & Shipping'}</span>
                 {isRtl ? <ArrowLeft className='w-4 h-4' /> : <ArrowRight className='w-4 h-4' />}
               </Link>
             </Button>
