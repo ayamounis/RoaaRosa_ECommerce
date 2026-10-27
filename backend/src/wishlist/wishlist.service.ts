@@ -72,8 +72,27 @@ export class WishlistService {
   }
 
   async addToWishlist(userId: string, productId: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+    let targetProductId = isUuid ? productId : null;
+
+    if (!targetProductId) {
+      const found = await this.prisma.product.findFirst({
+        where: {
+          OR: [{ slug: productId }, { title: productId }],
+          isActive: true,
+        },
+      });
+      if (found) {
+        targetProductId = found.id;
+      }
+    }
+
+    if (!targetProductId) {
+      throw new NotFoundException('Product not found or inactive');
+    }
+
     const product = await this.prisma.product.findUnique({
-      where: { id: productId },
+      where: { id: targetProductId },
     });
 
     if (!product || !product.isActive) {
@@ -84,12 +103,12 @@ export class WishlistService {
       where: {
         userId_productId: {
           userId,
-          productId,
+          productId: targetProductId,
         },
       },
       create: {
         userId,
-        productId,
+        productId: targetProductId,
       },
       update: {},
     });
@@ -107,17 +126,33 @@ export class WishlistService {
   }
 
   async removeFromWishlist(userId: string, productId: string) {
-    try {
-      await this.prisma.wishlistItem.delete({
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+    let targetProductId = isUuid ? productId : null;
+
+    if (!targetProductId) {
+      const found = await this.prisma.product.findFirst({
         where: {
-          userId_productId: {
-            userId,
-            productId,
-          },
+          OR: [{ slug: productId }, { title: productId }],
         },
       });
-    } catch {
-      // Ignore if item wasn't in wishlist
+      if (found) {
+        targetProductId = found.id;
+      }
+    }
+
+    if (targetProductId) {
+      try {
+        await this.prisma.wishlistItem.delete({
+          where: {
+            userId_productId: {
+              userId,
+              productId: targetProductId,
+            },
+          },
+        });
+      } catch {
+        // Ignore if item wasn't in wishlist
+      }
     }
 
     const items = await this.prisma.wishlistItem.findMany({

@@ -171,36 +171,66 @@ export class CartService {
 
     // 2. Resolve Variant
     let variant: any = null;
+    const isUuid = (val: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
     if (dto.variantId) {
-      variant = await this.prisma.productVariant.findUnique({
-        where: { id: dto.variantId },
-        include: { product: true },
-      });
+      if (isUuid(dto.variantId)) {
+        variant = await this.prisma.productVariant.findUnique({
+          where: { id: dto.variantId },
+          include: { product: true },
+        });
+      }
+      if (!variant) {
+        variant = await this.prisma.productVariant.findFirst({
+          where: { sku: dto.variantId },
+          include: { product: true },
+        });
+      }
       if (!variant || !variant.isActive || !variant.product.isActive) {
         throw new NotFoundException('Specified variant not found or inactive');
       }
     } else if (dto.productId) {
-      // Option D: VariantResolver (deterministic lookup: default variant first, then oldest created)
-      variant = await this.prisma.productVariant.findFirst({
-        where: {
-          productId: dto.productId,
-          isActive: true,
-          isDefault: true,
-          product: { isActive: true },
-        },
-        include: { product: true },
-      });
+      let targetProductId: string | null = isUuid(dto.productId) ? dto.productId : null;
 
-      if (!variant) {
+      if (!targetProductId) {
+        const product = await this.prisma.product.findFirst({
+          where: {
+            OR: [
+              { slug: dto.productId },
+              { title: dto.productId },
+            ],
+            isActive: true,
+          },
+        });
+        if (product) {
+          targetProductId = product.id;
+        }
+      }
+
+      if (targetProductId) {
+        // Option D: VariantResolver (deterministic lookup: default variant first, then oldest created)
         variant = await this.prisma.productVariant.findFirst({
           where: {
-            productId: dto.productId,
+            productId: targetProductId,
             isActive: true,
+            isDefault: true,
             product: { isActive: true },
           },
-          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           include: { product: true },
         });
+
+        if (!variant) {
+          variant = await this.prisma.productVariant.findFirst({
+            where: {
+              productId: targetProductId,
+              isActive: true,
+              product: { isActive: true },
+            },
+            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+            include: { product: true },
+          });
+        }
       }
 
       if (!variant) {
