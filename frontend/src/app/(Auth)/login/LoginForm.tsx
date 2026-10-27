@@ -14,12 +14,14 @@ import { Input } from '../../../_Components/ui/input'
 import { schema } from './login.schema'
 import { LoginFormType } from './login.types'
 import { useLanguage } from '@/context/LanguageContext'
+import GoogleAuthModal from '../../../_Components/shared/GoogleAuthModal'
 
 export default function LoginForm() {
     const { language, isRtl } = useLanguage()
     const isAr = language === 'ar'
     const [showPassword, setShowPassword] = useState(false)
-    const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+    const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false)
+    const [notRegisteredError, setNotRegisteredError] = useState(false)
 
     const form = useForm<LoginFormType>({
         resolver: zodResolver(schema),
@@ -32,6 +34,7 @@ export default function LoginForm() {
     const { control, handleSubmit, setValue, formState: { isSubmitting } } = form
 
     const handleLoginSubmit = async (values: LoginFormType) => {
+        setNotRegisteredError(false)
         try {
             const res = await signIn('credentials', {
                 ...values,
@@ -42,7 +45,22 @@ export default function LoginForm() {
                 toast.success(isAr ? 'تم تسجيل الدخول بنجاح! مرحباً بكِ' : 'Login successful! Welcome back')
                 window.location.href = '/'
             } else {
-                toast.error(isAr ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة' : 'Incorrect Email or Password')
+                const errorStr = res?.error || ''
+                if (errorStr.includes('NOT_REGISTERED') || errorStr.includes('غير مسجل')) {
+                    setNotRegisteredError(true)
+                    toast.error(
+                        isAr
+                            ? 'هذا الحساب غير مسجل لدينا، يرجى إنشاء حساب جديد أولاً'
+                            : 'Account not found. Please create an account first.',
+                        { duration: 5000 }
+                    )
+                } else if (errorStr.includes('ACCOUNT_DISABLED') || errorStr.includes('معطل')) {
+                    toast.error(isAr ? 'هذا الحساب معطل، يرجى التواصل مع الدعم' : 'Account is disabled. Please contact support.')
+                } else if (errorStr.includes('WRONG_PASSWORD')) {
+                    toast.error(isAr ? 'كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى' : 'Incorrect password. Please try again.')
+                } else {
+                    toast.error(isAr ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة' : 'Incorrect Email or Password')
+                }
             }
         } catch (error) {
             console.error(error)
@@ -50,30 +68,8 @@ export default function LoginForm() {
         }
     }
 
-    const handleGoogleSignIn = async () => {
-        setIsGoogleLoading(true)
-        try {
-            // First check if OAuth google provider can be invoked or use instant google provider
-            const res = await signIn('google-instant', {
-                email: 'customer.google@roarosa.com',
-                name: 'Google Customer',
-                googleId: 'google_oauth_instant_test',
-                redirect: false,
-            })
-
-            if (res?.ok) {
-                toast.success(isAr ? 'تم تسجيل الدخول بنجاح عبر حساب Google 🎉' : 'Signed in with Google successfully 🎉')
-                window.location.href = '/'
-            } else {
-                // Try standard google provider
-                await signIn('google', { callbackUrl: '/' })
-            }
-        } catch {
-            toast.success(isAr ? 'تم تسجيل الدخول بحساب Google التجريبي' : 'Signed in with Google Demo Account')
-            window.location.href = '/'
-        } finally {
-            setIsGoogleLoading(false)
-        }
+    const handleGoogleSignIn = () => {
+        setIsGoogleModalOpen(true)
     }
 
     const fillTestAccount = (role: 'admin' | 'customer') => {
@@ -93,7 +89,7 @@ export default function LoginForm() {
             <Button
                 type='button'
                 onClick={handleGoogleSignIn}
-                disabled={isGoogleLoading || isSubmitting}
+                disabled={isSubmitting}
                 variant='outline'
                 className='w-full h-12 rounded-xl border border-[#EBDED6] dark:border-[#3D332E] hover:border-[#C48D80] bg-white dark:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-xs cursor-pointer'
             >
@@ -117,11 +113,33 @@ export default function LoginForm() {
                     />
                 </svg>
                 <span>
-                    {isGoogleLoading
-                        ? (isAr ? 'جاري الاتصال بـ Google...' : 'Connecting to Google...')
-                        : (isAr ? 'المتابعة باستخدام حساب Google (Gmail)' : 'Continue with Google (Gmail)')}
+                    {isAr ? 'المتابعة باستخدام حساب Google (Gmail)' : 'Continue with Google (Gmail)'}
                 </span>
             </Button>
+
+            <GoogleAuthModal
+                isOpen={isGoogleModalOpen}
+                onClose={() => setIsGoogleModalOpen(false)}
+                isAr={isAr}
+                mode='login'
+            />
+
+            {/* Not Registered Error Banner */}
+            {notRegisteredError && (
+                <div className='p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs space-y-1.5 animate-in fade-in'>
+                    <p className='font-semibold'>
+                        {isAr
+                            ? '⚠️ هذا البريد الإلكتروني غير مسجل لدينا في قاعدة البيانات.'
+                            : '⚠️ This email is not registered in our store.'}
+                    </p>
+                    <p>
+                        {isAr ? 'يرجى إنشاء حساب جديد أولاً لتتمكني من تسجيل الدخول:' : 'Please create a new account to sign in:'}{' '}
+                        <Link href='/register' className='font-bold underline underline-offset-4 text-[#C48D80]'>
+                            {isAr ? 'إنشاء حساب جديد الآن' : 'Create an Account Now'}
+                        </Link>
+                    </p>
+                </div>
+            )}
 
             {/* Divider */}
             <div className='relative flex items-center justify-center my-4'>

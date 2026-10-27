@@ -24,14 +24,19 @@ export const handleRegister = async (values: RegisterFormType) => {
                 httpOnly: true,
                 sameSite: 'strict',
                 maxAge: 60 * 60 * 24 * 7
-            })
-            return true
-        }
-        else {
-            return finalRes.message
+            });
+            return true;
+        } else {
+            if (finalRes.message?.includes('already in use') || finalRes.message?.includes('already exists')) {
+                return 'البريد الإلكتروني مسجل بالفعل، يرجى تسجيل الدخول بدلاً من ذلك';
+            }
+            if (Array.isArray(finalRes.errors)) {
+                return finalRes.errors.join(', ');
+            }
+            return finalRes.message || 'فشل إنشاء الحساب، يرجى مراجعة البيانات المدخلة';
         }
     } catch (error) {
-        console.log(error);
+        console.error('Registration server error:', error);
+        return 'تعذر الاتصال بالسيرفر، يرجى المحاولة لاحقاً';
     }
-
 }

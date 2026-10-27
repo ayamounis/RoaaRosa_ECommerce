@@ -16,6 +16,7 @@ import { handleRegister } from './register.action';
 import { schema } from './register.schema';
 import { RegisterFormType } from './register.types';
 import { useLanguage } from '@/context/LanguageContext';
+import GoogleAuthModal from '../../../_Components/shared/GoogleAuthModal';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function RegisterForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   const form = useForm<RegisterFormType>({
     resolver: zodResolver(schema),
@@ -41,7 +42,13 @@ export default function RegisterForm() {
 
   const handleRegisterSubmit = async (values: RegisterFormType) => {
     try {
-      const resOutput = await handleRegister(values);
+      // Clean phone number (strip spaces/dashes)
+      const cleanedValues = {
+        ...values,
+        phone: values.phone.replace(/[\s-]/g, ''),
+      };
+
+      const resOutput = await handleRegister(cleanedValues);
       if (resOutput === true) {
         toast.success(isAr ? 'تم إنشاء الحساب بنجاح! يتم الآن تسجيل دخولك...' : 'Account created successfully! Signing in...');
         // Automatically sign in
@@ -65,28 +72,8 @@ export default function RegisterForm() {
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    setIsGoogleLoading(true);
-    try {
-      const res = await signIn('google-instant', {
-        email: 'customer.google@roarosa.com',
-        name: 'Google Customer',
-        googleId: 'google_oauth_instant_test',
-        redirect: false,
-      });
-
-      if (res?.ok) {
-        toast.success(isAr ? 'تم التسجيل والربط بحساب Google بنجاح 🎉' : 'Registered with Google successfully 🎉');
-        window.location.href = '/';
-      } else {
-        await signIn('google', { callbackUrl: '/' });
-      }
-    } catch {
-      toast.success(isAr ? 'تم التسجيل بحساب Google التجريبي' : 'Registered with Google Demo');
-      window.location.href = '/';
-    } finally {
-      setIsGoogleLoading(false);
-    }
+  const handleGoogleSignUp = () => {
+    setIsGoogleModalOpen(true);
   };
 
   return (
@@ -95,7 +82,7 @@ export default function RegisterForm() {
       <Button
         type='button'
         onClick={handleGoogleSignUp}
-        disabled={isGoogleLoading || isSubmitting}
+        disabled={isSubmitting}
         variant='outline'
         className='w-full h-12 rounded-xl border border-[#EBDED6] dark:border-[#3D332E] hover:border-[#C48D80] bg-white dark:bg-[#28211E] text-[#2B2320] dark:text-[#FAF6F0] font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-xs cursor-pointer'
       >
@@ -118,11 +105,17 @@ export default function RegisterForm() {
           />
         </svg>
         <span>
-          {isGoogleLoading
-            ? (isAr ? 'جاري الاتصال بـ Google...' : 'Connecting to Google...')
-            : (isAr ? 'التسجيل السريع باستخدام Google (Gmail)' : 'Sign up with Google (Gmail)')}
+          {isAr ? 'التسجيل السريع باستخدام Google (Gmail)' : 'Sign up with Google (Gmail)'}
         </span>
       </Button>
+
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        isAr={isAr}
+        mode='register'
+        defaultPhone={form.getValues('phone')}
+      />
 
       {/* Divider */}
       <div className='relative flex items-center justify-center my-4'>
@@ -195,6 +188,9 @@ export default function RegisterForm() {
                     />
                   </div>
                 </FormControl>
+                <p className='text-[10px] text-[#988172] px-1'>
+                  {isAr ? '📱 رقم الموبايل المصري (11 رقم) لتأكيد وتوصيل شحنتكِ' : '📱 Egyptian mobile number for order delivery & tracking'}
+                </p>
                 <FormMessage className='text-[11px] text-rose-500' />
               </FormItem>
             )}

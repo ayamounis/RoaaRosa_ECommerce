@@ -28,67 +28,42 @@ export const nextAuthConfig: NextAuthOptions = {
                 email: { label: 'Gmail', type: 'email' },
                 name: { label: 'Name', type: 'text' },
                 googleId: { label: 'Google ID', type: 'text' },
+                phone: { label: 'Phone', type: 'text' },
             },
             authorize: async (credentials) => {
                 if (!credentials?.email) return null;
                 const email = credentials.email.toLowerCase().trim();
                 const name = credentials.name || email.split('@')[0];
+                const phone = credentials.phone ? credentials.phone.trim() : undefined;
 
                 try {
-                    // Try to sign in or register automatically
-                    const signinRes = await fetch(`${API_BASE_URL}/auth/signin`, {
+                    const res = await fetch(`${API_BASE_URL}/auth/google`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             email,
-                            password: `GoogleAuth_SecretPass_2026_${credentials.googleId || 'default'}`,
+                            name,
+                            googleId: credentials.googleId,
+                            phone,
                         }),
                     });
 
-                    const signinData = await signinRes.json();
-                    if (signinData.message === 'success' && signinData.token) {
-                        const decoded = jwtDecode<DecodedToken>(signinData.token);
-                        const assignedRole = signinData.user?.role || decoded.role || (email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER');
+                    const data = await res.json();
+                    if (data.message === 'success' && data.token) {
+                        const decoded = jwtDecode<DecodedToken>(data.token);
+                        const assignedRole = data.user?.role || decoded.role || (email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER');
                         return {
-                            id: decoded.id || signinData.user?.id || 'google_user',
-                            email: signinData.user?.email || email,
-                            name: signinData.user?.name || name,
+                            id: data.user?.id || decoded.id || 'google_user',
+                            email: data.user?.email || email,
+                            name: data.user?.name || name,
                             role: assignedRole,
-                            credentialToken: signinData.token,
+                            credentialToken: data.token,
                         };
                     }
-
-                    // If not found, automatically register this Google account
-                    const signupRes = await fetch(`${API_BASE_URL}/auth/signup`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name,
-                            email,
-                            password: `GoogleAuth_SecretPass_2026_${credentials.googleId || 'default'}`,
-                            rePassword: `GoogleAuth_SecretPass_2026_${credentials.googleId || 'default'}`,
-                            phone: '01012345678',
-                        }),
-                    });
-
-                    const signupData = await signupRes.json();
-                    const token = signupData.token || 'mock_google_jwt_token';
-                    const assignedRole = signupData.user?.role || (email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER');
-                    return {
-                        id: signupData.user?.id || 'google_user_id',
-                        email,
-                        name,
-                        role: assignedRole,
-                        credentialToken: token,
-                    };
-                } catch {
-                    return {
-                        id: 'google_instant_user',
-                        email,
-                        name,
-                        role: email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER',
-                        credentialToken: 'mock_jwt_token_google_user',
-                    };
+                    return null;
+                } catch (error) {
+                    console.error('google-instant authorize error:', error);
+                    return null;
                 }
             },
         }),
@@ -100,6 +75,10 @@ export const nextAuthConfig: NextAuthOptions = {
                 password: { label: 'Password', type: 'password' },
             },
             authorize: async (credentials) => {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error('MISSING_CREDENTIALS');
+                }
+                const email = credentials.email.toLowerCase().trim();
                 try {
                     const res = await fetch(`${API_BASE_URL}/auth/signin`, {
                         method: 'POST',
@@ -107,14 +86,25 @@ export const nextAuthConfig: NextAuthOptions = {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            email: credentials?.email,
-                            password: credentials?.password,
+                            email,
+                            password: credentials.password,
                         }),
                     });
                     const finalResult = await res.json();
-                    if (finalResult.message === 'success') {
+
+                    if (res.status === 404 || finalResult.statusCode === 404) {
+                        throw new Error('NOT_REGISTERED');
+                    }
+                    if (res.status === 401 || finalResult.statusCode === 401) {
+                        if (finalResult.message?.includes('معطل')) {
+                            throw new Error('ACCOUNT_DISABLED');
+                        }
+                        throw new Error('WRONG_PASSWORD');
+                    }
+
+                    if (finalResult.message === 'success' && finalResult.token) {
                         const decodedObject = jwtDecode<DecodedToken>(finalResult.token);
-                        const assignedRole = finalResult.user?.role || decodedObject.role || (credentials?.email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER');
+                        const assignedRole = finalResult.user?.role || decodedObject.role || (email === 'admin@ecommerce.com' ? 'ADMIN' : 'USER');
                         return {
                             id: decodedObject.id || finalResult.user?.id,
                             email: finalResult.user?.email,
@@ -123,11 +113,12 @@ export const nextAuthConfig: NextAuthOptions = {
                             credentialToken: finalResult.token,
                         };
                     } else {
-                        return null;
+                        throw new Error(finalResult.message || 'AUTH_FAILED');
                     }
-                } catch (error) {
-                    console.log(error);
-                    return null;
+                } catch (error: unknown) {
+                    const err = error as Error;
+                    console.error('Credentials authorization error:', err?.message);
+                    throw new Error(err?.message || 'AUTH_FAILED');
                 }
             },
         }),
@@ -136,6 +127,32 @@ export const nextAuthConfig: NextAuthOptions = {
         signIn: '/login',
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            if (account?.provider === 'google' && user.email) {
+                try {
+                    const profileName = (profile as { name?: string })?.name;
+                    const res = await fetch(`${API_BASE_URL}/auth/google`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: user.email,
+                            name: user.name || profileName || user.email.split('@')[0],
+                            googleId: account.providerAccountId,
+                        }),
+                    });
+                    const data = await res.json();
+                    if (data.token) {
+                        user.credentialToken = data.token;
+                        user.id = data.user?.id || user.id;
+                        (user as { role?: string }).role = data.user?.role || 'USER';
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Google OAuth backend sync error:', e);
+                }
+            }
+            return true;
+        },
         jwt({ user, token, trigger, session }) {
             if (user) {
                 token.id = user.id;

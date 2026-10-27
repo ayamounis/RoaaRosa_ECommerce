@@ -20,6 +20,7 @@ import {
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyResetCodeDto } from './dto/verify-reset-code.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -66,10 +67,30 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Incorrect email or password, or account inactive.',
+    description: 'Incorrect password or account inactive.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Account not found. Please register first.',
   })
   signin(@Body() dto: SigninDto) {
     return this.authService.signin(dto);
+  }
+
+  @Public()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Google OAuth login / auto-registration',
+    description: 'Authenticates a Google user or creates a new customer record automatically, returning JWT.',
+  })
+  @ApiBody({ type: GoogleAuthDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Google authentication successful, JWT token and user profile returned.',
+  })
+  googleAuth(@Body() dto: GoogleAuthDto) {
+    return this.authService.googleAuth(dto);
   }
 
   // Exact endpoint name used by Next.js frontend: forgotPasswords (plural)

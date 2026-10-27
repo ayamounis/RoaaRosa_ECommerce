@@ -10,10 +10,12 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyResetCodeDto } from './dto/verify-reset-code.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { Role } from '@prisma/client';
 
 @Injectable()
@@ -61,6 +63,7 @@ export class AuthService {
         _id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
         role: user.role,
       },
     };
@@ -72,13 +75,17 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('Incorrect email or password');
+    if (!user) {
+      throw new NotFoundException('هذا الحساب غير مسجل لدينا، يرجى إنشاء حساب جديد أولاً');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('هذا الحساب معطل، يرجى التواصل مع الإدارة');
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Incorrect email or password');
+      throw new UnauthorizedException('كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى');
     }
 
     const token = await this.generateToken(user.id, user.email, user.role);
@@ -91,6 +98,55 @@ export class AuthService {
         _id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    };
+  }
+
+  async googleAuth(dto: GoogleAuthDto) {
+    const email = dto.email.toLowerCase().trim();
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      if (!user.isActive) {
+        throw new UnauthorizedException('هذا الحساب معطل، يرجى التواصل مع الإدارة');
+      }
+      // If user exists and doesn't have phone, but dto provides phone, update it
+      if (!user.phone && dto.phone) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { phone: dto.phone },
+        });
+      }
+    } else {
+      // Automatically register this new Google customer
+      const randomPassword = await bcrypt.hash(crypto.randomUUID() + '_google_auth', 10);
+      user = await this.prisma.user.create({
+        data: {
+          name: dto.name || email.split('@')[0],
+          email,
+          password: randomPassword,
+          phone: dto.phone || null,
+          role: Role.USER,
+          isActive: true,
+        },
+      });
+    }
+
+    const token = await this.generateToken(user.id, user.email, user.role);
+
+    return {
+      message: 'success',
+      token,
+      user: {
+        id: user.id,
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
         role: user.role,
       },
     };
