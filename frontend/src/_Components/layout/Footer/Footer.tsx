@@ -202,6 +202,11 @@ export default function Footer() {
                   {isAr ? 'تواصل معنا (خدمة العملاء)' : 'Contact Us (Customer Care)'}
                 </Link>
               </li>
+              <li>
+                <Link href='/contact' className='text-[#E5C2AF] font-medium hover:underline flex items-center gap-1.5'>
+                  <span>{isAr ? 'شراكات وتصدير الجملة (B2B)' : 'B2B Wholesale & Global Export'}</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

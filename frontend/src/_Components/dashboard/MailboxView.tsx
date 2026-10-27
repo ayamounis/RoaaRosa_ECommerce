@@ -8,7 +8,6 @@ import {
   Trash2,
   RefreshCw,
   Clock,
-  User,
   Phone,
   MessageSquare,
   CheckCircle2,
@@ -21,7 +20,8 @@ import {
   Send,
   Sparkles,
   Inbox,
-  Filter,
+  Globe2,
+  Building2,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/_Components/ui/button';
@@ -51,7 +51,7 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
   const [messages, setMessages] = useState<ContactMessageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<'ALL' | 'UNREAD' | 'READ'>('ALL');
+  const [selectedStatus, setSelectedStatus] = useState<'ALL' | 'UNREAD' | 'READ' | 'B2B'>('ALL');
   const [activeMessage, setActiveMessage] = useState<ContactMessageItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -68,7 +68,7 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
         headers['token'] = token;
       }
 
-      const statusQuery = selectedStatus !== 'ALL' ? `?status=${selectedStatus}` : '';
+      const statusQuery = (selectedStatus !== 'ALL' && selectedStatus !== 'B2B') ? `?status=${selectedStatus}` : '';
       const res = await fetch(`${API_BASE_URL}/contact${statusQuery}`, {
         headers,
         cache: 'no-store',
@@ -176,29 +176,56 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
     }
   };
 
+  const isMsgB2B = (m: ContactMessageItem) =>
+    m.subject.toLowerCase().includes('[b2b') ||
+    m.message.includes('🏢') ||
+    m.subject.toLowerCase().includes('export') ||
+    m.subject.toLowerCase().includes('استيراد');
+
+  const b2bCount = messages.filter(isMsgB2B).length;
+
   const filteredMessages = messages.filter((m) => {
     const term = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       m.name.toLowerCase().includes(term) ||
       m.email.toLowerCase().includes(term) ||
       m.subject.toLowerCase().includes(term) ||
-      m.message.toLowerCase().includes(term)
-    );
+      m.message.toLowerCase().includes(term);
+
+    if (!matchesSearch) return false;
+
+    if (selectedStatus === 'B2B') {
+      return isMsgB2B(m);
+    }
+
+    return true;
   });
 
   const unreadCount = messages.filter((m) => m.status === 'UNREAD').length;
 
   const quickReplyTemplates = isAr
-    ? [
-        'شكراً لتواصلكِ معنا، تم استلام استفساركِ وسيقوم فريقنا بمتابعة طلبكِ فوراً.',
-        'أهلاً بكِ، نسعد بخدمتكِ ويسرنا الرد على استفساركِ.',
-        'مرحباً بكِ، تم فحص استفساركِ وجاري اتخاذ اللازم لتوفير الخدمة بأفضل صورة.',
-      ]
-    : [
-        'Thank you for contacting us! We have received your inquiry and our team is looking into it.',
-        'Hello! It is a pleasure to assist you. We are glad to answer your questions.',
-        'Hello, we have noted your request and are taking necessary actions right away.',
-      ];
+    ? (activeMessage && isMsgB2B(activeMessage)
+        ? [
+            'أهلاً بكم، نسعد باهتمامكم باستيراد وتوزيع أزياء رواروسا من القطن المصري الفاخر. نرفق لكم كتالوج التشكيلات وعرض أسعار الجملة التفضيلية.',
+            'شكراً لتواصلكم معنا. طلب الاستيراد الخاص بمؤسستكم قيد المراجعة لدى قسم التصدير الدولي وسنوافيكم بمسودة العرض خلال 24 ساعة.',
+            'مرحباً، تم استلام بيانات متجركم وسيتم تجهيز حزمة العينات الملموسة (Swatches) للشحن المباشر إلى عنوانكم عبر البريد السريع.',
+          ]
+        : [
+            'شكراً لتواصلكِ معنا، تم استلام استفساركِ وسيقوم فريقنا بمتابعة طلبكِ فوراً.',
+            'أهلاً بكِ، نسعد بخدمتكِ ويسرنا الرد على استفساركِ.',
+            'مرحباً بكِ، تم فحص استفساركِ وجاري اتخاذ اللازم لتوفير الخدمة بأفضل صورة.',
+          ])
+    : (activeMessage && isMsgB2B(activeMessage)
+        ? [
+            'Thank you for your wholesale inquiry. We are pleased to share our seasonal export lookbook and tiered volume pricing.',
+            'Hello, your B2B boutique profile has been reviewed by our Global Export desk. We have attached the current catalog.',
+            'Thank you for reaching out! We are preparing the fabric swatches and sample pack for dispatch via express courier.',
+          ]
+        : [
+            'Thank you for contacting us! We have received your inquiry and our team is looking into it.',
+            'Hello! It is a pleasure to assist you. We are glad to answer your questions.',
+            'Hello, we have noted your request and are taking necessary actions right away.',
+          ]);
 
   const getInitials = (name: string) => {
     if (!name) return '??';
@@ -323,6 +350,26 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
               >
                 {isAr ? 'تمت القراءة' : 'Read'}
               </button>
+              <button
+                onClick={() => setSelectedStatus('B2B')}
+                className={`px-3 py-1 rounded-lg font-medium flex items-center gap-1.5 transition-colors ${
+                  selectedStatus === 'B2B'
+                    ? 'bg-amber-600 text-white shadow-2xs font-bold'
+                    : 'bg-[#FAF7F2] dark:bg-[#1F1917] text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20'
+                }`}
+              >
+                <Globe2 className="w-3 h-3" />
+                <span>{isAr ? 'استيراد B2B' : 'B2B Export'}</span>
+                {b2bCount > 0 && (
+                  <span
+                    className={`w-4 h-4 rounded-full text-[9px] flex items-center justify-center font-bold ${
+                      selectedStatus === 'B2B' ? 'bg-white text-amber-700' : 'bg-amber-500/20 text-amber-800 dark:text-amber-200'
+                    }`}
+                  >
+                    {b2bCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
@@ -390,15 +437,23 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
                         </span>
                       </div>
 
-                      <h4
-                        className={`text-xs truncate ${
-                          isUnread
-                            ? 'font-bold text-[#2B2320] dark:text-[#FAF6F0]'
-                            : 'font-medium text-[#2B2320]/75 dark:text-[#FAF6F0]/75'
-                        }`}
-                      >
-                        {msg.subject}
-                      </h4>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {isMsgB2B(msg) && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 shrink-0">
+                            <Globe2 className="w-2.5 h-2.5" />
+                            <span>B2B</span>
+                          </span>
+                        )}
+                        <h4
+                          className={`text-xs truncate ${
+                            isUnread
+                              ? 'font-bold text-[#2B2320] dark:text-[#FAF6F0]'
+                              : 'font-medium text-[#2B2320]/75 dark:text-[#FAF6F0]/75'
+                          }`}
+                        >
+                          {msg.subject}
+                        </h4>
+                      </div>
 
                       <p className="text-[11px] text-[#988172] line-clamp-1 leading-normal font-normal">
                         {msg.message}
@@ -518,6 +573,44 @@ export default function MailboxView({ token, onUpdateUnreadCount }: MailboxViewP
                     {activeMessage.subject}
                   </h2>
                 </div>
+
+                {/* B2B Highlight Banner if wholesale */}
+                {isMsgB2B(activeMessage) && (
+                  <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-500/30 flex items-center justify-between flex-wrap gap-2.5 shadow-2xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold">
+                        <Building2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-amber-900 dark:text-amber-100 flex items-center gap-1.5">
+                          <span>{isAr ? 'طلب شراكة استيراد وتوريد بالجملة' : 'B2B Wholesale & Export Inquiry'}</span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-200 font-mono">
+                            Priority B2B
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-[#988172]">
+                          {isAr ? 'تم استلام هذا الطلب من بوابة المستوردين الدولية لرواروسا' : 'Submitted via Global B2B Export Portal'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {activeMessage.phone && (
+                      <a
+                        href={`https://wa.me/${activeMessage.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                          isAr
+                            ? `مرحباً، نتواصل معكم من قسم التصدير الدولي لرواروسا بخصوص طلب استيراد الأزياء بالجملة لمؤسستكم (${activeMessage.name}).`
+                            : `Hello, reaching out from ROAROSA Global Export regarding your wholesale boutique inquiry.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>{isAr ? 'محادثة واتساب مباشرة' : 'WhatsApp Buyer'}</span>
+                      </a>
+                    )}
+                  </div>
+                )}
 
                 {/* Sender Metadata Box */}
                 <div className="p-4 rounded-2xl bg-white dark:bg-[#28211E] border border-[#EBDED6] dark:border-[#3D332E] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">

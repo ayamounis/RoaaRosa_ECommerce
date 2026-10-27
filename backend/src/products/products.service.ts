@@ -310,7 +310,48 @@ export class ProductsService {
     if (dto.subcategoryId !== undefined) data.subcategoryId = dto.subcategoryId;
     if (dto.brandId !== undefined) data.brandId = dto.brandId;
 
-    const updated = await this.prisma.product.update({
+    const updated = await this.prisma.$transaction(async (tx) => {
+      if (dto.images && Array.isArray(dto.images)) {
+        await tx.productImage.deleteMany({ where: { productId: id } });
+        if (dto.images.length > 0) {
+          await tx.productImage.createMany({
+            data: dto.images.map((url, idx) => ({
+              productId: id,
+              url,
+              displayOrder: idx,
+            })),
+          });
+        }
+      }
+
+      if (dto.sizeId && dto.colorId) {
+        const defaultVariant = await tx.productVariant.findFirst({
+          where: { productId: id, isDefault: true },
+        });
+        if (defaultVariant) {
+          await tx.productVariant.update({
+            where: { id: defaultVariant.id },
+            data: {
+              sizeId: dto.sizeId,
+              colorId: dto.colorId,
+              stockQuantity: dto.stockQuantity !== undefined ? dto.stockQuantity : defaultVariant.stockQuantity,
+            },
+          });
+        } else {
+          await tx.productVariant.create({
+            data: {
+              productId: id,
+              sizeId: dto.sizeId,
+              colorId: dto.colorId,
+              sku: `${id.substring(0, 8).toUpperCase()}-${Date.now().toString().slice(-4)}`,
+              stockQuantity: dto.stockQuantity ?? 10,
+              isDefault: true,
+            },
+          });
+        }
+      }
+
+      return tx.product.update({
       where: { id },
       data,
       include: {
@@ -320,6 +361,8 @@ export class ProductsService {
         images: true,
         variants: { include: { size: true, color: true } },
       },
+    });
+
     });
 
     return {
@@ -404,6 +447,51 @@ export class ProductsService {
         size: variant.size,
         color: variant.color,
       },
+    };
+  }
+
+  async getAllColors() {
+    const colors = await this.prisma.color.findMany({
+      orderBy: { name: 'asc' },
+    });
+    return {
+      results: colors.length,
+      data: colors,
+    };
+  }
+
+  async createColor(dto: { name: string; hexCode: string }) {
+    if (!dto.name || !dto.hexCode) {
+      throw new BadRequestException('Name and hexCode are required');
+    }
+    const hex = dto.hexCode.startsWith('#') ? dto.hexCode.toUpperCase() : '#' + dto.hexCode.toUpperCase();
+    const existing = await this.prisma.color.findFirst({
+      where: {
+        OR: [
+          { hexCode: { equals: hex, mode: 'insensitive' } },
+          { name: { equals: dto.name.trim(), mode: 'insensitive' } },
+        ],
+      },
+    });
+    if (existing) {
+      return { data: existing };
+    }
+    const color = await this.prisma.color.create({
+      data: {
+        name: dto.name.trim(),
+        hexCode: hex,
+      },
+    });
+    return { data: color };
+  }
+
+  async getAllSizes() {
+    const sizes = await this.prisma.size.findMany({
+      orderBy: { displayOrder: 'asc' },
+    });
+    return {
+      results: sizes.length,
+      data: sizes,
     };
   }
 }

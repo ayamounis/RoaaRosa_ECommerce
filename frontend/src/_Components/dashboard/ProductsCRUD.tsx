@@ -17,7 +17,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/_Components/ui/button';
 import { toast } from 'sonner';
 import { API_BASE_URL } from '@/utils/apiConfig';
-import ProductFormDialog, { ProductItem } from './ProductFormDialog';
+import ProductFormDialog, { ProductItem, SaveProductPayload } from './ProductFormDialog';
 import { CategoryItem } from './CategoryFormDialog';
 
 interface ProductsCRUDProps {
@@ -79,16 +79,7 @@ export default function ProductsCRUD({ token }: ProductsCRUDProps) {
     setDialogOpen(true);
   };
 
-  const handleSaveProduct = async (prodData: {
-    id?: string;
-    title: string;
-    description: string;
-    price: number;
-    priceAfterDiscount?: number;
-    categoryId: string;
-    imageCover: string;
-    stockQuantity?: number;
-  }): Promise<boolean> => {
+  const handleSaveProduct = async (prodData: SaveProductPayload): Promise<boolean> => {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
@@ -112,8 +103,13 @@ export default function ProductsCRUD({ token }: ProductsCRUDProps) {
           description: prodData.description,
           price: prodData.price,
           priceAfterDiscount: prodData.priceAfterDiscount,
-          categoryId: prodData.categoryId,
           imageCover: prodData.imageCover,
+          images: prodData.images,
+          categoryId: prodData.categoryId,
+          subcategoryId: prodData.subcategoryId,
+          brandId: prodData.brandId,
+          sizeId: prodData.sizeId,
+          colorId: prodData.colorId,
           stockQuantity: prodData.stockQuantity,
         }),
       });
@@ -425,6 +421,7 @@ export default function ProductsCRUD({ token }: ProductsCRUDProps) {
         isOpen={dialogOpen}
         product={selectedProduct}
         categories={categories}
+        token={token}
         onClose={() => setDialogOpen(false)}
         onSave={handleSaveProduct}
       />

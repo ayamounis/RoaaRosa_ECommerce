@@ -48,8 +48,24 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
     { name: 'Taupe', hex: '#988172' },
     { name: 'Cream', hex: '#FBF9F3' },
   ];
+  const rawVariants =
+    'variants' in product && Array.isArray((product as { variants?: unknown }).variants)
+      ? (product as { variants: { color?: { name: string; hexCode: string } }[] }).variants
+      : [];
+  const uniqueColorsMap = new Map<string, { name: string; hex: string }>();
+  rawVariants.forEach((v) => {
+    if (v.color?.hexCode && !uniqueColorsMap.has(v.color.hexCode.toUpperCase())) {
+      uniqueColorsMap.set(v.color.hexCode.toUpperCase(), {
+        name: v.color.name,
+        hex: v.color.hexCode,
+      });
+    }
+  });
+  const variantSwatches = Array.from(uniqueColorsMap.values());
   const swatches =
-    'swatches' in product && Array.isArray((product as { swatches?: unknown }).swatches)
+    variantSwatches.length > 0
+      ? variantSwatches
+      : 'swatches' in product && Array.isArray((product as { swatches?: unknown }).swatches)
       ? (product as { swatches: { name: string; hex: string }[] }).swatches
       : defaultSwatches;
   const activeSwatch = swatches[selectedSwatchIdx] || swatches[0];

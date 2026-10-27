@@ -4,7 +4,7 @@ import React from 'react';
 import ThemeToggle from '../../shared/ThemeToggle/ThemeToggle';
 import LanguageToggle from '../../shared/LanguageToggle/LanguageToggle';
 import Link from 'next/link';
-import { Truck, HelpCircle } from 'lucide-react';
+import { Truck, HelpCircle, Globe2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 function EgyptFlag({ className = 'w-4 h-3' }: { className?: string }) {
@@ -87,7 +87,14 @@ export default function TopHeader() {
           </Link>
         </div>
 
-        <div className='flex items-center gap-4 text-xs text-[#EBDED6]'>
+        <div className='flex items-center gap-3 sm:gap-4 text-xs text-[#EBDED6]'>
+          <Link
+            href='/contact'
+            className='hidden md:flex items-center gap-1.5 text-[#E5C2AF] hover:text-white transition-colors font-semibold'
+          >
+            <Globe2 className='w-3 h-3' />
+            <span>{isAr ? 'استيراد وتصدير B2B' : 'B2B Wholesale & Export'}</span>
+          </Link>
           <span className='flex items-center gap-1.5 font-medium bg-black/20 px-2 py-0.5 rounded-sm border border-white/10'>
             <EgyptFlag className='w-4 h-2.5' />
             <span>{isAr ? 'ج.م' : 'EGP'}</span>

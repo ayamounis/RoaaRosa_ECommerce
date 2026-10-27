@@ -22,6 +22,7 @@ import DashboardHeader from '@/_Components/dashboard/DashboardHeader';
 import DashboardOverview, { DashboardOverviewData } from '@/_Components/dashboard/DashboardOverview';
 import ProductsCRUD from '@/_Components/dashboard/ProductsCRUD';
 import CategoriesCRUD from '@/_Components/dashboard/CategoriesCRUD';
+import UsersCRUD from '@/_Components/dashboard/UsersCRUD';
 import MailboxView from '@/_Components/dashboard/MailboxView';
 
 export default function DashboardPage() {
@@ -270,6 +271,13 @@ export default function DashboardPage() {
             ? 'متابعة حالات الفواتير والتوصيل لجميع محافظات مصر'
             : 'Track fulfillment, customer details, and invoice statuses',
         };
+      case 'users':
+        return {
+          title: isAr ? 'إدارة العملاء والمستخدمين' : 'Users & Customers Directory',
+          subtitle: isAr
+            ? 'إدارة حسابات عملاء المتجر، الصلاحيات، وحالات التفعيل'
+            : 'View customer accounts, toggle access, manage roles, and track orders',
+        };
       case 'coupons':
         return {
           title: isAr ? 'كوبونات الخصم والعروض الترويجية' : 'Discount Coupons & Deals',
@@ -362,6 +370,12 @@ export default function DashboardPage() {
                   token={sessionToken}
                   onUpdateUnreadCount={(cnt) => setUnreadCount(cnt)}
                 />
+              </div>
+            )}
+
+                        {activeTab === 'users' && (
+              <div className='animate-in fade-in duration-300'>
+                <UsersCRUD token={sessionToken} />
               </div>
             )}
 

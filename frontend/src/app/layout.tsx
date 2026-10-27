@@ -4,7 +4,7 @@ import { Toaster } from "@/_Components/ui/sonner";
 import MainProvider from "@/Provider/MainProvider";
 import type { Metadata } from "next";
 import { Suspense } from 'react';
-import { Playfair_Display, Poppins } from 'next/font/google';
+import { Playfair_Display, Poppins, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import Navbar from "../_Components/layout/Navbar/Navbar";
 import "./globals.css";
 import BottomFilter from "@/_Components/shared/BottomFilter/BottomFilter";
@@ -29,6 +29,13 @@ const playfair = Playfair_Display({
   display: 'swap'
 });
 
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic', 'latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700'],
+  variable: '--font-ibm-plex-arabic',
+  display: 'swap',
+});
+
 export const metadata: Metadata = constructMetadata();
 
 export default function RootLayout({
@@ -47,7 +54,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${poppins.variable} ${playfair.variable} bg-background text-foreground antialiased overflow-x-hidden`}
+        className={`${poppins.variable} ${playfair.variable} ${ibmPlexArabic.variable} bg-background text-foreground antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"

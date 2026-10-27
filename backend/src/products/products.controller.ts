@@ -26,6 +26,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CreateVariantDto } from './dto/create-variant.dto';
+import { CreateColorDto } from './dto/create-color.dto';
 import { QueryProductsDto } from './dto/query-products.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -112,6 +113,51 @@ export class ProductsController {
   findAll(@Req() req: Request) {
     return this.productsService.findAll(req.query);
   }
+
+  @Public()
+  @Get('meta/colors')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all colors' })
+  getMetaColors() {
+    return this.productsService.getAllColors();
+  }
+
+  @Public()
+  @Get('colors')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all colors (alias)' })
+  getColors() {
+    return this.productsService.getAllColors();
+  }
+
+  @Public()
+  @Get('meta/sizes')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all sizes' })
+  getMetaSizes() {
+    return this.productsService.getAllSizes();
+  }
+
+  @Public()
+  @Get('sizes')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all sizes (alias)' })
+  getSizes() {
+    return this.productsService.getAllSizes();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('meta/colors')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth('bearer')
+  @ApiSecurity('token')
+  @ApiOperation({ summary: 'Add a new color (Admin)' })
+  @ApiBody({ type: CreateColorDto })
+  createColor(@Body() dto: CreateColorDto) {
+    return this.productsService.createColor(dto);
+  }
+
 
   @Public()
   @Get(':id')

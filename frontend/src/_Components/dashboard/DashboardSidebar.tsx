@@ -7,6 +7,7 @@ import {
   Package,
   Layers,
   ShoppingBag,
+  Users,
   Mail,
   Tag,
   ArrowRight,
@@ -24,6 +25,7 @@ export type DashboardTab =
   | 'products'
   | 'categories'
   | 'orders'
+  | 'users'
   | 'mailbox'
   | 'coupons';
 
@@ -80,6 +82,12 @@ export default function DashboardSidebar({
       labelAr: 'إدارة الطلبات',
       labelEn: 'Client Orders',
       icon: ShoppingBag,
+    },
+    {
+      id: 'users',
+      labelAr: 'سجل العملاء والمستخدمين',
+      labelEn: 'Users & Customers',
+      icon: Users,
     },
     {
       id: 'mailbox',
