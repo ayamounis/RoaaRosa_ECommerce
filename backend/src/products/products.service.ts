@@ -84,17 +84,48 @@ export class ProductsService {
     };
 
     // 1. Category Filter (supports query['category[in]'] or query.category?.in or query.category)
+    const isUUID = (str: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
     const categoryIn = rawQuery['category[in]'] || (rawQuery.category && rawQuery.category.in) || rawQuery.category;
-    if (categoryIn) {
-      const categoryIds = Array.isArray(categoryIn) ? categoryIn : [categoryIn];
-      where.categoryId = { in: categoryIds };
+    if (categoryIn && categoryIn !== 'all') {
+      const rawCategories = Array.isArray(categoryIn) ? categoryIn : [categoryIn];
+      const validUuids = rawCategories.filter(isUUID);
+      const slugs = rawCategories.filter((c: string) => !isUUID(c) && c !== 'all');
+
+      const resolvedIds = [...validUuids];
+      if (slugs.length > 0) {
+        const found = await this.prisma.category.findMany({
+          where: { slug: { in: slugs } },
+          select: { id: true },
+        });
+        resolvedIds.push(...found.map((c) => c.id));
+      }
+
+      if (resolvedIds.length > 0) {
+        where.categoryId = { in: resolvedIds };
+      }
     }
 
     // 2. Brand Filter
     const brandIn = rawQuery['brand[in]'] || (rawQuery.brand && rawQuery.brand.in) || rawQuery.brand;
-    if (brandIn) {
-      const brandIds = Array.isArray(brandIn) ? brandIn : [brandIn];
-      where.brandId = { in: brandIds };
+    if (brandIn && brandIn !== 'all') {
+      const rawBrands = Array.isArray(brandIn) ? brandIn : [brandIn];
+      const validUuids = rawBrands.filter(isUUID);
+      const slugs = rawBrands.filter((b: string) => !isUUID(b) && b !== 'all');
+
+      const resolvedIds = [...validUuids];
+      if (slugs.length > 0) {
+        const found = await this.prisma.brand.findMany({
+          where: { slug: { in: slugs } },
+          select: { id: true },
+        });
+        resolvedIds.push(...found.map((b) => b.id));
+      }
+
+      if (resolvedIds.length > 0) {
+        where.brandId = { in: resolvedIds };
+      }
     }
 
     // 3. Price Filter (price[gte], price[lte])
