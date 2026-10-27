@@ -7,6 +7,57 @@ import Link from 'next/link';
 import { Truck, HelpCircle } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
+function EgyptFlag({ className = 'w-4 h-3' }: { className?: string }) {
+  return (
+    <svg
+      viewBox='0 0 900 600'
+      className={`${className} inline-block rounded-xs border border-white/20 shadow-2xs shrink-0 overflow-hidden`}
+      aria-label='علم جمهورية مصر العربية'
+      role='img'
+    >
+      {/* Top Red Stripe */}
+      <rect width='900' height='200' fill='#CE1126' />
+      {/* Middle White Stripe */}
+      <rect y='200' width='900' height='200' fill='#FFFFFF' />
+      {/* Bottom Black Stripe */}
+      <rect y='400' width='900' height='200' fill='#000000' />
+      {/* Eagle of Saladin (Gold Emblem) */}
+      <g transform='translate(450, 300) scale(1.15)'>
+        {/* Wings & Body */}
+        <path
+          d='M-18,-60 C-26,-42 -38,-20 -58,-10 C-46,15 -35,38 -20,60 C-10,50 10,50 20,60 C35,38 46,15 58,-10 C38,-20 26,-42 18,-60 Z'
+          fill='#C69214'
+          stroke='#8A6508'
+          strokeWidth='2'
+        />
+        {/* Head */}
+        <path
+          d='M-7,-60 C-7,-72 7,-72 10,-60 C14,-62 16,-58 10,-55 Z'
+          fill='#C69214'
+          stroke='#8A6508'
+          strokeWidth='1.5'
+        />
+        {/* Center Shield */}
+        <path
+          d='M-16,-22 L16,-22 L14,24 L0,32 L-14,24 Z'
+          fill='#FFFFFF'
+          stroke='#8A6508'
+          strokeWidth='2.5'
+        />
+        {/* Shield vertical band */}
+        <path d='M-5,-20 L5,-20 L4,25 L0,29 L-4,25 Z' fill='#C69214' />
+        {/* Base scroll */}
+        <path
+          d='M-30,56 C-10,50 10,50 30,56 C25,62 -25,62 -30,56 Z'
+          fill='#C69214'
+          stroke='#8A6508'
+          strokeWidth='1.5'
+        />
+      </g>
+    </svg>
+  );
+}
+
 export default function TopHeader() {
   const { language } = useLanguage();
   const isAr = language === 'ar';
@@ -37,8 +88,8 @@ export default function TopHeader() {
         </div>
 
         <div className='flex items-center gap-4 text-xs text-[#EBDED6]'>
-          <span className='flex items-center gap-1.5 font-medium bg-black/20 px-2 py-0.5 rounded border border-white/10'>
-            <span>🇪🇬</span>
+          <span className='flex items-center gap-1.5 font-medium bg-black/20 px-2 py-0.5 rounded-sm border border-white/10'>
+            <EgyptFlag className='w-4 h-2.5' />
             <span>{isAr ? 'ج.م' : 'EGP'}</span>
           </span>
           <Link

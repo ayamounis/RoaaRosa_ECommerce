@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <rect width="900" height="200" fill="#CE1126" />
+  <rect y="200" width="900" height="200" fill="#FFFFFF" />
+  <rect y="400" width="900" height="200" fill="#000000" />
+  <!-- Eagle of Saladin -->
+  <g transform="translate(450, 300) scale(1.15)">
+    <!-- Wings & Body -->
+    <path d="M-18,-60 C-26,-42 -38,-20 -58,-10 C-46,15 -35,38 -20,60 C-10,50 10,50 20,60 C35,38 46,15 58,-10 C38,-20 26,-42 18,-60 Z" fill="#C69214" stroke="#8A6508" stroke-width="2" />
+    <!-- Head -->
+    <path d="M-7,-60 C-7,-72 7,-72 10,-60 C14,-62 16,-58 10,-55 Z" fill="#C69214" stroke="#8A6508" stroke-width="1.5" />
+    <!-- Center Shield -->
+    <path d="M-16,-22 L16,-22 L14,24 L0,32 L-14,24 Z" fill="#FFFFFF" stroke="#8A6508" stroke-width="2.5" />
+    <!-- Shield vertical band -->
+    <path d="M-5,-20 L5,-20 L4,25 L0,29 L-4,25 Z" fill="#C69214" />
+    <!-- Scroll base -->
+    <path d="M-30,56 C-10,50 10,50 30,56 C25,62 -25,62 -30,56 Z" fill="#C69214" stroke="#8A6508" stroke-width="1.5" />
+  </g>
+</svg>
